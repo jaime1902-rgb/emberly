@@ -26,7 +26,7 @@ const STEPS: Step[] = [
   {
     type: "choice",
     key: "canal",
-    q: "¿Ya captáis pacientes por WhatsApp o Instagram?",
+    q: "¿Ya captáis pacientes por WhatsApp?",
     options: ["Sí, activamente", "Algo, pero sin gestionarlo bien", "Todavía no"],
   },
   {
@@ -55,7 +55,7 @@ const offerPoints: { label: string; body: string }[] = [
   },
   {
     label: "Qué recibe tu clínica",
-    body: "Un asistente que contesta y agenda pacientes por WhatsApp e Instagram al instante, 24/7. Implementación, métricas del periodo y soporte directo incluidos.",
+    body: "Un asistente que contesta y agenda pacientes por WhatsApp al instante, 24/7. Implementación, métricas del periodo y soporte directo incluidos.",
   },
   {
     label: "Por qué es gratis",
@@ -176,7 +176,7 @@ export function EmberlyFunnel() {
                 <Seal />
               </div>
               <p className="mx-auto mt-6 max-w-[42ch] text-[0.98rem] leading-relaxed text-text-muted">
-                Emberly implementa gratis su asistente de WhatsApp e Instagram en 3 clínicas de
+                Emberly implementa gratis su asistente de WhatsApp en 3 clínicas de
                 Madrid durante 30 días. Si funciona, sigues. Si no, no pagas nada.
               </p>
               <div className="mt-9">
