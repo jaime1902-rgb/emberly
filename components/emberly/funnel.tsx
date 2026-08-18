@@ -1,7 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Bot,
+  Check,
+  type LucideIcon,
+  MessageCircle,
+  Sparkles,
+  Target,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EmberlyMark } from "./mark";
 
@@ -48,22 +57,26 @@ const STEPS: Step[] = [
   { type: "success" },
 ];
 
-const offerPoints: { label: string; body: string }[] = [
+const offerPoints: { label: string; body: string; icon: LucideIcon }[] = [
   {
     label: "Qué es",
-    body: "Implementamos gratis nuestro asistente de IA en tu clínica durante 30 días. Funciona desde el día 1. No pagas nada mientras dura el piloto.",
+    body: "Implementamos gratis nuestro asistente de inteligencia artificial en tu clínica durante 30 días. Funciona desde el día 1. No pagas nada mientras dura el piloto.",
+    icon: Bot,
   },
   {
     label: "Qué recibe tu clínica",
-    body: "Un asistente que contesta y agenda pacientes por WhatsApp al instante, 24/7. Implementación, métricas del periodo y soporte directo incluidos.",
+    body: "Un asistente de IA que contesta y agenda pacientes por WhatsApp al instante, 24/7. Implementación, métricas del periodo y soporte directo incluidos.",
+    icon: MessageCircle,
   },
   {
     label: "Por qué es gratis",
     body: "Acabamos de lanzarnos. Tenemos la tecnología, nos falta el caso real. A cambio del piloto, documentamos resultados reales: citas, leads, no-shows.",
+    icon: Sparkles,
   },
   {
     label: "Por qué solo 3",
     body: "Cada implementación es atención personalizada. No se puede hacer bien con veinte clínicas a la vez, así que limitamos las plazas para que el resultado sea real.",
+    icon: Target,
   },
 ];
 
@@ -138,7 +151,12 @@ export function EmberlyFunnel() {
       <div className="relative flex flex-none items-center justify-between px-7 py-6 sm:px-12">
         <div className="flex items-center gap-2.5">
           <EmberlyMark className="h-6 w-auto" />
-          <span className="font-display text-lg font-semibold italic">Emberly</span>
+          <div className="flex flex-col leading-none">
+            <span className="font-display text-lg font-semibold italic">Emberly</span>
+            <span className="text-[0.58rem] tracking-[0.14em] text-text-dim uppercase">
+              AI Automation Studio
+            </span>
+          </div>
         </div>
         <div className="text-xs tracking-wider text-text-dim tabular-nums">
           {String(current + 1).padStart(2, "0")} / {STEPS.length}
@@ -157,7 +175,7 @@ export function EmberlyFunnel() {
           key={current}
           className={cn(
             "absolute inset-0 flex flex-col items-center overflow-y-auto px-7 py-14 text-center transition-all duration-500 sm:px-12",
-            topAligned ? "justify-start pt-14" : "justify-center",
+            topAligned ? "justify-start pt-10" : "justify-center",
             entered ? "translate-x-0 opacity-100" : "translate-x-10 opacity-0"
           )}
         >
@@ -176,7 +194,7 @@ export function EmberlyFunnel() {
                 <Seal />
               </div>
               <p className="mx-auto mt-6 max-w-[42ch] text-[0.98rem] leading-relaxed text-text-muted">
-                Emberly implementa gratis su asistente de WhatsApp en 3 clínicas
+                Emberly implementa gratis su asistente de <strong className="font-semibold text-foreground">inteligencia artificial</strong> para WhatsApp en 3 clínicas
                 durante 30 días. Si funciona, sigues. Si no, no pagas nada.
               </p>
               <div className="mt-9">
@@ -190,10 +208,11 @@ export function EmberlyFunnel() {
               <h2 className="font-display text-[clamp(1.7rem,3.6vw,2.4rem)] font-semibold text-balance italic">
                 La oferta de las 3 plazas.
               </h2>
-              <dl className="mt-7 flex flex-col gap-5">
+              <dl className="mt-6 flex flex-col gap-4">
                 {offerPoints.map((p) => (
                   <div key={p.label}>
-                    <dt className="text-[0.8rem] font-semibold tracking-wide text-accent-strong uppercase">
+                    <dt className="flex items-center gap-1.5 text-[0.8rem] font-semibold tracking-wide text-accent-strong uppercase">
+                      <p.icon className="size-3.5" strokeWidth={2.25} />
                       {p.label}
                     </dt>
                     <dd className="mt-1 max-w-[62ch] text-[0.94rem] leading-relaxed text-text-muted">
@@ -202,7 +221,7 @@ export function EmberlyFunnel() {
                   </div>
                 ))}
               </dl>
-              <div className="mt-6 border-t border-gold/40 pt-5">
+              <div className="mt-5 border-t border-gold/40 pt-4">
                 <p className="text-sm leading-relaxed text-text-muted">
                   <span className="font-semibold text-foreground">El candado: </span>
                   si al terminar el piloto quieres seguir, el precio de la mensualidad ya está
@@ -210,7 +229,7 @@ export function EmberlyFunnel() {
                   final.
                 </p>
               </div>
-              <div className="mt-7 mb-20">
+              <div className="mt-6 mb-24">
                 <InviteButton onClick={goNext}>Ver si tengo plaza</InviteButton>
               </div>
             </div>
@@ -348,7 +367,7 @@ function Seal({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex size-28 -rotate-3 flex-col items-center justify-center gap-1 rounded-full border-[3px] border-double border-gold text-primary-foreground shadow-[0_10px_24px_-8px_rgba(31,61,43,0.5)]",
+        "relative flex size-28 -rotate-3 flex-col items-center justify-center gap-1 rounded-full border-[3px] border-double border-gold text-primary-foreground shadow-[0_10px_24px_-8px_rgba(31,61,43,0.5)]",
         className
       )}
       style={{
@@ -356,8 +375,18 @@ function Seal({ className }: { className?: string }) {
         animation: "seal-press 0.7s cubic-bezier(.2,.8,.2,1) both",
       }}
     >
-      <span className="font-display text-4xl leading-none font-bold">3</span>
-      <span className="text-[0.56rem] tracking-[0.16em] uppercase">plazas</span>
+      <svg viewBox="0 0 112 112" aria-hidden className="absolute inset-0">
+        <defs>
+          <path id="seal-rim" d="M 56,56 m -45,0 a 45,45 0 1,1 90,0 a 45,45 0 1,1 -90,0" fill="none" />
+        </defs>
+        <text fill="var(--gold)" fontSize="6.4" letterSpacing="2" className="font-sans">
+          <textPath href="#seal-rim" startOffset="1%">
+            INTELIGENCIA ARTIFICIAL &#8226; INTELIGENCIA ARTIFICIAL &#8226;
+          </textPath>
+        </text>
+      </svg>
+      <span className="relative font-display text-4xl leading-none font-bold">3</span>
+      <span className="relative text-[0.56rem] tracking-[0.16em] uppercase">plazas</span>
     </div>
   );
 }
