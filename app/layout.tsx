@@ -18,7 +18,7 @@ const archivo = Archivo({
 export const metadata: Metadata = {
   title: "Emberly — La oferta de las 3 plazas",
   description:
-    "Emberly implementa gratis su asistente de WhatsApp en 3 clínicas de Madrid durante 30 días.",
+    "Emberly implementa gratis su asistente de WhatsApp en 3 clínicas durante 30 días.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

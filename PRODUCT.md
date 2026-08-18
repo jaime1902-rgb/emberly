@@ -12,17 +12,17 @@ Next.js (App Router) + TypeScript + Tailwind CSS v4 + shadcn/ui.
 
 ## Users
 
-**Launch-campaign audience (current, overrides the earlier broad-audience decision for this phase):** owners/decision-makers of aesthetic medicine, hair (capilar), or dental clinics in Madrid, high average ticket, already capturing patients via WhatsApp, who feel leads slip through or that staff loses too much time answering messages manually. Not targeting the biggest clinics — targeting the clearest pain + willingness to pilot.
+**Launch-campaign audience (current, overrides the earlier broad-audience decision for this phase):** owners/decision-makers of aesthetic medicine, hair (capilar), or dental clinics, high average ticket, already capturing patients via WhatsApp, who feel leads slip through or that staff loses too much time answering messages manually. Not targeting the biggest clinics — targeting the clearest pain + willingness to pilot.
 
 The earlier broad "decided-on-AI, comparing vendors" audience still describes Emberly's eventual general positioning once past this launch campaign; record both, current campaign wins for now.
 
 ## Product Purpose
 
-Emberly is an AI automation studio. The site's only job is lead capture. Current build is a single, specific campaign: **la oferta de las 3 plazas** — Emberly is selecting 3 Madrid clinics for a free 30-day pilot of its WhatsApp booking assistant, in exchange for real, documented results (case studies). The funnel sells this specific offer and qualifies applicants for it; it is not general informational content.
+Emberly is an AI automation studio. The site's only job is lead capture. Current build is a single, specific campaign: **la oferta de las 3 plazas** — Emberly is selecting 3 clinics for a free 30-day pilot of its WhatsApp booking assistant, in exchange for real, documented results (case studies). The funnel sells this specific offer and qualifies applicants for it; it is not general informational content.
 
 ## Positioning
 
-Launch-phase positioning: Emberly just launched in Madrid and has the technology but no local case studies yet. The 3-clinic pilot is an explicit, honest trade — free implementation for the clinic, a real documented case study for Emberly. Longer-term positioning (once past launch): deep technical specialization in AI/automation, custom-built agents and complex integrations rather than templated setups.
+Launch-phase positioning: Emberly just launched and has the technology but no local case studies yet. The 3-clinic pilot is an explicit, honest trade — free implementation for the clinic, a real documented case study for Emberly. Longer-term positioning (once past launch): deep technical specialization in AI/automation, custom-built agents and complex integrations rather than templated setups.
 
 ## Operating Context
 
@@ -30,11 +30,11 @@ Visitor is a clinic owner/manager evaluating whether to apply for one of the 3 f
 
 ## The 3-Spots Offer — durable facts (do not alter without the user)
 
-- **What:** Emberly implements its automation assistant free for 3 Madrid clinics for 30 days. Works from day 1. Clinic pays nothing during the pilot.
+- **What:** Emberly implements its automation assistant free for 3 clinics for 30 days. Works from day 1. Clinic pays nothing during the pilot.
 - **What the clinic gets:** an assistant that answers and books patients via WhatsApp instantly, 24/7. Implementation, period metrics, and direct support included throughout the pilot.
-- **Why it's free:** Emberly just launched in Madrid — has the tech, lacks real local case studies. The trade: clinic gets the service free, Emberly gets a real, measurable, documented case study (appointments booked, leads answered, no-shows reduced).
+- **Why it's free:** Emberly just launched — has the tech, lacks real local case studies. The trade: clinic gets the service free, Emberly gets a real, measurable, documented case study (appointments booked, leads answered, no-shows reduced).
 - **Why only 3:** each implementation needs personalized attention; quality/results require limiting scope, not scaling to many at once.
-- **Selection criteria:** aesthetic/hair/dental clinics in Madrid, high ticket, already capturing patients via WhatsApp, feeling leads slip or staff overloaded answering messages. Not "biggest clinic" — "clearest pain + willingness to try."
+- **Selection criteria:** aesthetic/hair/dental clinics, high ticket, already capturing patients via WhatsApp, feeling leads slip or staff overloaded answering messages. Not "biggest clinic" — "clearest pain + willingness to try."
 - **After the 30 days:** Emberly presents results (messages answered, appointments booked, recovered leads). Clinic then decides whether to continue on the paid monthly plan — no pressure, no fine print.
 - **The trust lock ("el candado"):** the monthly price is agreed on day 1, before the pilot starts. No end-of-pilot negotiation or surprise pricing — the pilot is the proof, the pricing decision is made upfront.
 

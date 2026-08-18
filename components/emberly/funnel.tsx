@@ -59,7 +59,7 @@ const offerPoints: { label: string; body: string }[] = [
   },
   {
     label: "Por qué es gratis",
-    body: "Acabamos de llegar a Madrid. Tenemos la tecnología, nos falta el caso real. A cambio del piloto, documentamos resultados reales: citas, leads, no-shows.",
+    body: "Acabamos de lanzarnos. Tenemos la tecnología, nos falta el caso real. A cambio del piloto, documentamos resultados reales: citas, leads, no-shows.",
   },
   {
     label: "Por qué solo 3",
@@ -176,8 +176,8 @@ export function EmberlyFunnel() {
                 <Seal />
               </div>
               <p className="mx-auto mt-6 max-w-[42ch] text-[0.98rem] leading-relaxed text-text-muted">
-                Emberly implementa gratis su asistente de WhatsApp en 3 clínicas de
-                Madrid durante 30 días. Si funciona, sigues. Si no, no pagas nada.
+                Emberly implementa gratis su asistente de WhatsApp en 3 clínicas
+                durante 30 días. Si funciona, sigues. Si no, no pagas nada.
               </p>
               <div className="mt-9">
                 <InviteButton onClick={goNext}>Quiero mi plaza</InviteButton>
