@@ -137,7 +137,7 @@ export function EmberlyFunnel() {
 
       <div className="relative flex flex-none items-center justify-between px-7 py-6 sm:px-12">
         <div className="flex items-center gap-2.5">
-          <EmberlyMark className="h-[21px] w-[24px]" />
+          <EmberlyMark className="h-6 w-auto" />
           <span className="font-display text-lg font-semibold italic">Emberly</span>
         </div>
         <div className="text-xs tracking-wider text-text-dim tabular-nums">
@@ -166,7 +166,7 @@ export function EmberlyFunnel() {
               <div className="absolute -top-6 -right-16 hidden sm:block">
                 <Seal />
               </div>
-              <EmberlyMark className="mx-auto h-[30px] w-[34px]" />
+              <EmberlyMark className="mx-auto h-11 w-auto" />
               <h1 className="mt-8 max-w-[15ch] font-display text-[clamp(2rem,4.8vw,3.2rem)] font-bold text-balance">
                 30 días gratis.
                 <br />
