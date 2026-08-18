@@ -143,7 +143,7 @@ export function EmberlyFunnel() {
   const topAligned = step.type === "offer" || step.type === "contact";
 
   return (
-    <div className="bg-fine-grid relative flex h-svh flex-col overflow-hidden bg-background">
+    <div className="relative flex h-svh flex-col overflow-hidden bg-background">
       {/* Ruled invitation-card frame */}
       <div className="pointer-events-none absolute inset-3 rounded-sm border border-gold/40 sm:inset-5" />
       <div className="pointer-events-none absolute inset-4 rounded-sm border border-foreground/10 sm:inset-6" />
