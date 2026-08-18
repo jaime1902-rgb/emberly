@@ -46,7 +46,7 @@ export function EmberlyMark({ className }: { className?: string }) {
         points="36,8 40,2 42,9 58,20 50,26 38,25 30,18 30,10"
         fill="var(--foreground)"
       />
-      <circle cx="52" cy="17" r="1.3" fill="var(--ink)" />
+      <circle cx="52" cy="17" r="1.3" fill="var(--background)" />
     </svg>
   );
 }

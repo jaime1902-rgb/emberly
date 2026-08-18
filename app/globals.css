@@ -7,16 +7,15 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-plex-sans);
-  --font-mono: var(--font-plex-mono);
-  --font-logo: var(--font-cormorant);
-  --font-display: var(--font-bricolage);
+  --font-sans: var(--font-archivo);
+  --font-display: var(--font-bodoni);
   --font-heading: var(--font-display);
-  --color-navy: var(--navy);
-  --color-navy-soft: var(--navy-soft);
-  --color-navy-softer: var(--navy-softer);
+  --color-paper: var(--paper);
+  --color-paper-soft: var(--paper-soft);
+  --color-ink-soft: var(--ink-soft);
   --color-accent-strong: var(--accent-strong);
   --color-accent-dim: var(--accent-dim);
+  --color-gold: var(--gold);
   --color-text-muted: var(--text-muted);
   --color-text-dim: var(--text-dim);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -58,50 +57,50 @@
 }
 
 :root {
-  /* Emberly is a deliberately dark, single-theme brand — no light variant. */
-  --background: #05070d;
-  --foreground: #edf1fa;
-  --card: #182548;
-  --card-foreground: #edf1fa;
-  --popover: #182548;
-  --popover-foreground: #edf1fa;
-  --primary: #2f8dff;
-  --primary-foreground: #ffffff;
-  --secondary: #111b36;
-  --secondary-foreground: #edf1fa;
-  --muted: #111b36;
-  --muted-foreground: #9aa6c4;
-  --accent: #182548;
-  --accent-foreground: #edf1fa;
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: rgba(237, 241, 250, 0.14);
-  --input: rgba(237, 241, 250, 0.1);
-  --ring: #6fc3ff;
-  --chart-1: #2f8dff;
-  --chart-2: #6fc3ff;
-  --chart-3: #9aa6c4;
-  --chart-4: #69759a;
-  --chart-5: #182548;
-  --radius: 0.75rem;
-  --sidebar: #0a1226;
-  --sidebar-foreground: #edf1fa;
-  --sidebar-primary: #2f8dff;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #182548;
-  --sidebar-accent-foreground: #edf1fa;
-  --sidebar-border: rgba(237, 241, 250, 0.14);
-  --sidebar-ring: #6fc3ff;
+  /* Editorial-luxury invitation. Bone paper, ink, one committed field of
+     apothecary green, a thin gold rule. Single theme — no dark variant. */
+  --background: #f6f1e7;
+  --foreground: #221f19;
+  --card: #efe8d9;
+  --card-foreground: #221f19;
+  --popover: #f6f1e7;
+  --popover-foreground: #221f19;
+  --primary: #1f3d2b;
+  --primary-foreground: #f6f1e7;
+  --secondary: #efe8d9;
+  --secondary-foreground: #221f19;
+  --muted: #efe8d9;
+  --muted-foreground: #5b5648;
+  --accent: #1f3d2b;
+  --accent-foreground: #f6f1e7;
+  --destructive: oklch(0.55 0.19 25);
+  --border: rgba(34, 31, 25, 0.16);
+  --input: rgba(34, 31, 25, 0.16);
+  --ring: #1f3d2b;
+  --chart-1: #1f3d2b;
+  --chart-2: #a68a3f;
+  --chart-3: #5b5648;
+  --chart-4: #8a8370;
+  --chart-5: #efe8d9;
+  --radius: 0.25rem;
+  --sidebar: #efe8d9;
+  --sidebar-foreground: #221f19;
+  --sidebar-primary: #1f3d2b;
+  --sidebar-primary-foreground: #f6f1e7;
+  --sidebar-accent: #efe8d9;
+  --sidebar-accent-foreground: #221f19;
+  --sidebar-border: rgba(34, 31, 25, 0.16);
+  --sidebar-ring: #1f3d2b;
 
   /* Emberly brand tokens */
-  --ink: #05070d;
-  --navy: #0a1226;
-  --navy-soft: #111b36;
-  --navy-softer: #182548;
-  --accent-strong: #6fc3ff;
-  --accent-dim: rgba(47, 141, 255, 0.16);
-  --text-muted: #9aa6c4;
-  --text-dim: #69759a;
-  --grid-line: rgba(111, 195, 255, 0.06);
+  --paper: #f6f1e7;
+  --paper-soft: #efe8d9;
+  --ink-soft: #5b5648;
+  --accent-strong: #1f3d2b;
+  --accent-dim: rgba(31, 61, 43, 0.1);
+  --gold: #a68a3f;
+  --text-muted: #5b5648;
+  --text-dim: #8a8370;
 }
 
 @layer base {
@@ -116,26 +115,8 @@
   }
 }
 
-@layer utilities {
-  .bg-grid {
-    background-color: var(--ink);
-    background-image:
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: 56px 56px;
-    background-position: center;
-  }
-}
-
-@keyframes glow-pulse {
-  0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  50% { opacity: 0.75; transform: translate(-50%, -50%) scale(1.06); }
-}
-@keyframes dot-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
-}
-@keyframes cue-bob {
-  0%, 100% { transform: translateY(0); opacity: 0.6; }
-  50% { transform: translateY(6px); opacity: 1; }
+@keyframes seal-press {
+  0% { opacity: 0; transform: scale(1.5) rotate(-14deg); }
+  60% { opacity: 1; transform: scale(0.94) rotate(-4deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-3deg); }
 }
