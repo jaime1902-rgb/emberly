@@ -143,7 +143,7 @@ export function EmberlyFunnel() {
   const topAligned = step.type === "offer" || step.type === "contact";
 
   return (
-    <div className="relative flex h-svh flex-col bg-background">
+    <div className="bg-fine-grid relative flex h-svh flex-col bg-background">
       {/* Ruled invitation-card frame */}
       <div className="pointer-events-none absolute inset-3 rounded-sm border border-gold/40 sm:inset-5" />
       <div className="pointer-events-none absolute inset-4 rounded-sm border border-foreground/10 sm:inset-6" />
@@ -181,6 +181,15 @@ export function EmberlyFunnel() {
         >
           {step.type === "cover" && (
             <div className="relative">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -inset-x-24 -inset-y-32 -z-10 opacity-[0.07]"
+                style={{
+                  background:
+                    "repeating-linear-gradient(115deg, var(--accent-strong) 0px, var(--accent-strong) 2px, transparent 2px, transparent 64px)",
+                  maskImage: "radial-gradient(ellipse 60% 55% at 50% 45%, black 0%, transparent 75%)",
+                }}
+              />
               <div className="absolute -top-6 -right-16 hidden sm:block">
                 <Seal />
               </div>

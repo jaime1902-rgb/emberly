@@ -115,6 +115,15 @@
   }
 }
 
+@layer utilities {
+  /* Fine engraved dot-grid — reads as security-paper stipple (luxury) and as
+     a circuit/pixel grid (futurist) at once. Kept faint: texture, not pattern. */
+  .bg-fine-grid {
+    background-image: radial-gradient(circle at 1px 1px, rgba(31, 61, 43, 0.15) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+}
+
 @keyframes seal-press {
   0% { opacity: 0; transform: scale(1.5) rotate(-14deg); }
   60% { opacity: 1; transform: scale(0.94) rotate(-4deg); }
