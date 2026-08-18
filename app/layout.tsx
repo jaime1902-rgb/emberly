@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bodoni_Moda, Archivo } from "next/font/google";
+import { Bodoni_Moda, Archivo, Exo_2 } from "next/font/google";
 import "./globals.css";
 
 const bodoni = Bodoni_Moda({
@@ -15,26 +15,36 @@ const archivo = Archivo({
   weight: ["400", "500", "600"],
 });
 
+const exo2 = Exo_2({
+  variable: "--font-exo2",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+});
+
 export const metadata: Metadata = {
-  title: "Emberly — La oferta de las 3 plazas",
+  title: "Emberly AI — La oferta de las 3 plazas",
   description:
-    "Emberly implementa gratis su asistente de WhatsApp en 3 clínicas durante 30 días.",
+    "Emberly implementa gratis su asistente de IA para WhatsApp en 3 clínicas durante 30 días.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es" className={`${bodoni.variable} ${archivo.variable} h-full antialiased`}>
+    <html
+      lang="es"
+      className={`${bodoni.variable} ${archivo.variable} ${exo2.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col bg-background text-foreground overflow-hidden">
         {/*
-          THESIS: sell three exclusive pilot places like a private invitation, not a SaaS signup form.
-          OWN-WORLD: bone-paper ground, one committed field of apothecary green, a thin gold rule, Bodoni Moda
-          display serif, Archivo body/UI, a wax-seal edition medallion, letterpress button, ruled paper inputs.
-          STORY: a clinic owner receives what reads like a hand-numbered invitation to one of three spots,
-          understands the honest trade (free pilot for a real case study), and requests their place.
-          FIRST VIEWPORT: centered bone page, small ink horse mark, wax-seal medallion beside the headline,
-          Bodoni headline, Archivo subhead, one letterpress CTA.
-          FORM: editorial-luxury invitation — direction pinned directly by the user ("lujo editorial"); the
-          multi-candidate roll was skipped because the brief already named the world.
+          THESIS: an access-restricted invitation with an AI nerve — editorial trust plus a live system pulse.
+          OWN-WORLD: bone paper, near-black ink, night-navy for authority (buttons, mark, active borders),
+          electric indigo for data/system signals (counter, tags, circuit nodes, progress), gold reserved for
+          the seal only. Bodoni Moda display, Archivo body, Exo 2 small-caps for data/metric labels.
+          STORY: a clinic owner sees a live, ticking system (terminal counter, circuit-node card, progress bar)
+          holding an honest, limited invitation — not a generic lead form.
+          FIRST VIEWPORT: mark top-left, centered terminal-style spots counter with blinking cursor, subhead,
+          one navy CTA with an indigo hover border.
+          FORM: "invitación de acceso restringido — editorial con nervio de IA", pinned directly by the user
+          with exact palette, type, and per-screen copy; built to that spec, not re-interpreted.
           FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the
           verdict, DESIGN.md, and every shipping raster carrying its provenance.
         */}

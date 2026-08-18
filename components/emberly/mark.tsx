@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-/** Emberly logomark: the studio's real horse-head mark asset. */
+/** Emberly logomark: the studio's real horse-head mark asset, tinted navy. */
 export function EmberlyMark({ className }: { className?: string }) {
   return (
     <Image

@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Next.js (App Router) + TypeScript + Tailwind CSS v4 + shadcn/ui.
+Next.js (App Router) + TypeScript + Tailwind CSS v4 + shadcn/ui + Framer Motion (step transitions, spring-animated progress bar, choice-card hover).
 
 ## Users
 
@@ -26,7 +26,7 @@ Launch-phase positioning: Emberly just launched and has the technology but no lo
 
 ## Operating Context
 
-Visitor is a clinic owner/manager evaluating whether to apply for one of the 3 free pilot spots. The funnel: hook (scarcity: 3 spots) → offer explainer (what it is, what the clinic gets, why it's free, why only 3) → qualifying questions (clinic type, current WhatsApp usage, current pain) → application form ("Solicitar mi plaza", not an instant booking — Emberly reviews and confirms fit within 24h) → confirmation, which also sets expectations for what happens after the 30 days (results review, then the clinic decides on the monthly plan).
+Visitor is a clinic owner/manager evaluating whether to apply for one of the 3 free pilot spots. Current funnel (5 screens, one question per screen, inside a single card — see DESIGN.md): hero (terminal-style scarcity counter) → clinic type → pain point (with a fade-in follow-up on message volume) → contact details (nombre, clínica, teléfono WhatsApp, ciudad — no email field) → confirmation with a WhatsApp deep link. "Solicitar mi plaza" is a reviewed application, not an instant booking — Emberly confirms fit within 24h. The standalone "offer explainer" screen (qué es / qué recibe / por qué gratis / por qué solo 3 / el candado) that an earlier build had was dropped from the flow at the user's explicit direction; that trust content now lives only in the hero subhead and the legal line under the contact form.
 
 ## The 3-Spots Offer — durable facts (do not alter without the user)
 
@@ -41,6 +41,7 @@ Visitor is a clinic owner/manager evaluating whether to apply for one of the 3 f
 ## Capabilities and Constraints
 
 - Current build is a client-side-only funnel (no backend/CRM wired up yet). Captured leads/applications are not persisted or sent anywhere — this is a known, temporary gap before a production backend/CRM integration.
+- The confirmation screen's WhatsApp button links to a placeholder number (`EMBERLY_WHATSAPP_NUMBER` in `components/emberly/funnel.tsx`) — **must be replaced with Emberly's real WhatsApp Business number before launch.**
 - No real client case studies exist yet — that is the explicit reason the 3-spots offer exists. Do not present any example/illustrative content as if it were a completed real case study from this campaign.
 - Cookie consent / RGPD banner is deliberately deferred to the production build; not present in the current demo.
 - Spanish-only for now (no i18n).

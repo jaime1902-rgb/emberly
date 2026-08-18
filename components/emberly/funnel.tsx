@@ -1,479 +1,468 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Bot,
-  Check,
-  type LucideIcon,
-  MessageCircle,
-  Sparkles,
-  Target,
-} from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EmberlyMark } from "./mark";
 
-type ChoiceKey = "tipo" | "canal" | "dolor";
+/** TODO: swap for Emberly's real WhatsApp Business number before launch. */
+const EMBERLY_WHATSAPP_NUMBER = "34600000000";
 
-type Step =
-  | { type: "cover" }
-  | { type: "offer" }
-  | { type: "choice"; key: ChoiceKey; q: string; options: string[] }
-  | { type: "contact"; q: string; sub: string }
-  | { type: "success" };
+const TOTAL_STEPS = 5;
 
-const STEPS: Step[] = [
-  { type: "cover" },
-  { type: "offer" },
-  {
-    type: "choice",
-    key: "tipo",
-    q: "¿Qué tipo de clínica tienes?",
-    options: ["Estética", "Capilar", "Dental", "Otra especialidad"],
-  },
-  {
-    type: "choice",
-    key: "canal",
-    q: "¿Ya captáis pacientes por WhatsApp?",
-    options: ["Sí, activamente", "Algo, pero sin gestionarlo bien", "Todavía no"],
-  },
-  {
-    type: "choice",
-    key: "dolor",
-    q: "¿Qué es lo que más os está pasando ahora mismo?",
-    options: [
-      "Se nos escapan leads sin contestar",
-      "El equipo pierde demasiado tiempo respondiendo",
-      "Las dos cosas",
-      "No estoy seguro",
-    ],
-  },
-  {
-    type: "contact",
-    q: "¿Dónde te contactamos si hay plaza?",
-    sub: "Revisamos cada solicitud a mano. Si tu clínica encaja con el perfil, te confirmamos tu plaza en menos de 24h.",
-  },
-  { type: "success" },
+type TipoOption = { value: string; tag: string };
+type DolorOption = { value: string; tag: string | null };
+
+const TIPO_OPTIONS: TipoOption[] = [
+  { value: "Medicina estética", tag: "TICKET ALTO" },
+  { value: "Capilar / injerto", tag: "TICKET MUY ALTO" },
+  { value: "Dental", tag: "IMPLANTES Y ORTODONCIA" },
+  { value: "Otra", tag: "CUÉNTANOS" },
 ];
 
-const offerPoints: { label: string; body: string; icon: LucideIcon }[] = [
-  {
-    label: "Qué es",
-    body: "Implementamos gratis nuestro asistente de inteligencia artificial en tu clínica durante 30 días. Funciona desde el día 1. No pagas nada mientras dura el piloto.",
-    icon: Bot,
-  },
-  {
-    label: "Qué recibe tu clínica",
-    body: "Un asistente de IA que contesta y agenda pacientes por WhatsApp al instante, 24/7. Implementación, métricas del periodo y soporte directo incluidos.",
-    icon: MessageCircle,
-  },
-  {
-    label: "Por qué es gratis",
-    body: "Acabamos de lanzarnos. Tenemos la tecnología, nos falta el caso real. A cambio del piloto, documentamos resultados reales: citas, leads, no-shows.",
-    icon: Sparkles,
-  },
-  {
-    label: "Por qué solo 3",
-    body: "Cada implementación es atención personalizada. No se puede hacer bien con veinte clínicas a la vez, así que limitamos las plazas para que el resultado sea real.",
-    icon: Target,
-  },
+const DOLOR_OPTIONS: DolorOption[] = [
+  { value: "Leads que no contesto a tiempo", tag: null },
+  { value: "Citas que se cancelan sin avisar", tag: null },
+  { value: "Mi equipo pierde horas contestando", tag: null },
+  { value: "Todo lo anterior", tag: "CASO PRIORITARIO" },
 ];
 
-const emptyAnswers = {
-  tipo: null as string | null,
-  canal: null as string | null,
-  dolor: null as string | null,
-  nombre: "",
-  email: "",
-  telefono: "",
-  clinica: "",
+const VOLUMEN_OPTIONS = ["Menos de 20 / semana", "Entre 20 y 50 / semana", "Más de 50 / semana"];
+
+const stepVariants = {
+  enter: { x: 20, opacity: 0 },
+  center: { x: 0, opacity: 1 },
+  exit: { x: -20, opacity: 0 },
 };
 
 export function EmberlyFunnel() {
-  const [current, setCurrent] = useState(0);
-  const [answers, setAnswers] = useState(emptyAnswers);
-  const [entered, setEntered] = useState(false);
+  const [step, setStep] = useState(0);
+  const [tipo, setTipo] = useState<string | null>(null);
+  const [dolor, setDolor] = useState<string | null>(null);
+  const [volumen, setVolumen] = useState<string | null>(null);
+  const [nombre, setNombre] = useState("");
+  const [clinica, setClinica] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [ciudad, setCiudad] = useState("");
 
-  const step = STEPS[current];
+  const referencia = useMemo(() => `#EMB-${Date.now().toString(36).toUpperCase()}`, []);
 
-  useEffect(() => {
-    setEntered(false);
-    const t = setTimeout(() => setEntered(true), 20);
-    return () => clearTimeout(t);
-  }, [current]);
+  const goNext = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
+  const goBack = () => setStep((s) => Math.max(s - 1, 0));
 
-  const goNext = () => setCurrent((c) => Math.min(c + 1, STEPS.length - 1));
-  const goBack = () => setCurrent((c) => Math.max(c - 1, 0));
+  const datosValid = useMemo(() => {
+    const phoneOk = telefono.replace(/[^0-9]/g, "").length >= 9;
+    return nombre.trim().length > 1 && phoneOk;
+  }, [nombre, telefono]);
 
-  const contactValid = useMemo(() => {
-    const emailOk = /\S+@\S+\.\S+/.test(answers.email);
-    const phoneOk = answers.telefono.replace(/[^0-9]/g, "").length >= 9;
-    return answers.nombre.trim().length > 1 && emailOk && phoneOk;
-  }, [answers]);
+  function selectTipo(value: string) {
+    setTipo(value);
+    setTimeout(goNext, 260);
+  }
 
-  function selectChoice(key: ChoiceKey, value: string) {
-    setAnswers((a) => ({ ...a, [key]: value }));
+  function selectDolor(value: string) {
+    setDolor(value);
+  }
+
+  function selectVolumen(value: string) {
+    setVolumen(value);
     setTimeout(goNext, 260);
   }
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
+      const isInput = (document.activeElement as HTMLElement)?.tagName === "INPUT";
       if (e.key === "Enter") {
-        if (step.type === "cover" || step.type === "offer") goNext();
-        else if (step.type === "contact" && contactValid) goNext();
+        if (step === 0) goNext();
+        else if (step === 3 && datosValid) goNext();
       }
-      if (e.key >= "1" && e.key <= "4" && step.type === "choice") {
-        const idx = Number(e.key) - 1;
-        const opt = step.options[idx];
-        if (opt) selectChoice(step.key, opt);
-      }
-      if (e.key === "Backspace" && (document.activeElement as HTMLElement)?.tagName !== "INPUT") {
-        goBack();
-      }
+      if (e.key === "Backspace" && !isInput) goBack();
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, contactValid]);
+  }, [step, datosValid]);
 
-  const progress = (current / (STEPS.length - 1)) * 100;
-  const showBotnav = step.type !== "success";
-  const showFwd = step.type === "cover" || step.type === "offer" || step.type === "contact";
-  const topAligned = step.type === "offer" || step.type === "contact";
+  const progress = (step / (TOTAL_STEPS - 1)) * 100;
+  const showBotnav = step !== 4;
+  const showFwd = step === 0 || step === 3;
+
+  const whatsappHref = `https://wa.me/${EMBERLY_WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    `Hola, soy ${nombre || "un solicitante"} de ${clinica || "mi clínica"}. Acabo de solicitar una de las 3 plazas del piloto de Emberly.`
+  )}`;
 
   return (
-    <div className="relative flex h-svh flex-col overflow-hidden bg-background">
-      {/* Ruled invitation-card frame */}
-      <div className="pointer-events-none absolute inset-3 rounded-sm border border-gold/40 sm:inset-5" />
-      <div className="pointer-events-none absolute inset-4 rounded-sm border border-foreground/10 sm:inset-6" />
-      {/* Scanner sweep — a slow signal pass over the whole page, the clearest
-          "this is a live system" cue, kept faint enough to stay a texture. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.09]"
-        style={{
-          background:
-            "linear-gradient(180deg, transparent 0%, var(--accent-strong) 8%, transparent 18%)",
-          backgroundSize: "100% 260%",
-          backgroundRepeat: "no-repeat",
-          animation: "scan-sweep 11s linear infinite",
-        }}
-      />
+    <div className="bg-tech-grid relative flex min-h-svh flex-col items-center justify-center bg-background px-4 py-8 sm:px-8">
+      <div className="relative w-full max-w-2xl overflow-hidden rounded-sm border border-electric/15 bg-card shadow-[0_30px_60px_-30px_rgba(26,26,62,0.25)]">
+        <CircuitCorners />
 
-      <div className="relative flex flex-none items-center justify-between px-7 py-6 sm:px-12">
-        <div className="flex items-center gap-2.5">
-          <EmberlyMark className="h-6 w-auto" />
-          <div className="flex flex-col leading-none">
-            <span className="font-display text-lg font-semibold italic">Emberly</span>
-            <span className="text-[0.58rem] tracking-[0.14em] text-text-dim uppercase">
-              AI Automation Studio
-            </span>
+        <div className="relative h-[1.5px] w-full bg-border/50">
+          <motion.div
+            className="h-full bg-electric"
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ type: "spring", stiffness: 120, damping: 22 }}
+          />
+        </div>
+
+        <div className="flex items-center justify-between px-6 py-5 sm:px-9">
+          <div className="flex items-center gap-2">
+            <EmberlyMark className="h-6 w-auto" />
+            <span className="font-display text-base font-semibold text-navy italic">Emberly AI</span>
+          </div>
+          <div className="font-data text-[0.68rem] font-medium tracking-[0.14em] text-text-dim tabular-nums">
+            0{step + 1} / {TOTAL_STEPS}
           </div>
         </div>
-        <div className="text-xs tracking-wider text-text-dim tabular-nums">
-          {String(current + 1).padStart(2, "0")} / {STEPS.length}
-        </div>
-      </div>
 
-      <div className="relative mx-7 h-px flex-none bg-border sm:mx-12">
-        <div
-          className="h-full bg-accent-strong transition-all duration-500 ease-[cubic-bezier(.65,0,.35,1)]"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-
-      <div className="relative flex-1 overflow-hidden">
-        <div
-          key={current}
-          className={cn(
-            "absolute inset-0 flex flex-col items-center overflow-y-auto px-7 py-14 text-center transition-all duration-500 sm:px-12",
-            topAligned ? "justify-start pt-10" : "justify-center",
-            entered ? "translate-x-0 opacity-100" : "translate-x-10 opacity-0"
-          )}
-        >
-          {step.type === "cover" && (
-            <div className="relative">
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -inset-x-24 -inset-y-32 -z-10 opacity-[0.07]"
-                style={{
-                  background:
-                    "repeating-linear-gradient(115deg, var(--accent-strong) 0px, var(--accent-strong) 2px, transparent 2px, transparent 64px)",
-                  maskImage: "radial-gradient(ellipse 60% 55% at 50% 45%, black 0%, transparent 75%)",
-                }}
-              />
-              <div className="absolute -top-6 -right-16 hidden sm:block">
-                <Seal />
-              </div>
-              <EmberlyMark className="mx-auto h-11 w-auto" />
-              <h1 className="mt-8 max-w-[15ch] font-display text-[clamp(2rem,4.8vw,3.2rem)] font-bold text-balance">
-                30 días gratis.
-                <br />
-                Resultados reales.
-              </h1>
-              <div className="mx-auto mt-6 w-fit sm:hidden">
-                <Seal />
-              </div>
-              <p className="mx-auto mt-6 max-w-[42ch] text-[0.98rem] leading-relaxed text-text-muted">
-                Emberly implementa gratis su asistente de <strong className="font-semibold text-foreground">inteligencia artificial</strong> para WhatsApp en 3 clínicas
-                durante 30 días. Si funciona, sigues. Si no, no pagas nada.
-              </p>
-              <div className="mt-9">
-                <InviteButton onClick={goNext}>Quiero mi plaza</InviteButton>
-              </div>
-            </div>
-          )}
-
-          {step.type === "offer" && (
-            <div className="w-full max-w-xl text-left">
-              <h2 className="font-display text-[clamp(1.7rem,3.6vw,2.4rem)] font-semibold text-balance italic">
-                La oferta de las 3 plazas.
-              </h2>
-              <dl className="mt-6 flex flex-col gap-4">
-                {offerPoints.map((p) => (
-                  <div key={p.label}>
-                    <dt className="flex items-center gap-1.5 text-[0.8rem] font-semibold tracking-wide text-accent-strong uppercase">
-                      <p.icon className="size-3.5" strokeWidth={2.25} />
-                      {p.label}
-                    </dt>
-                    <dd className="mt-1 max-w-[62ch] text-[0.94rem] leading-relaxed text-text-muted">
-                      {p.body}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-              <div className="mt-5 border-t border-gold/40 pt-4">
-                <p className="text-sm leading-relaxed text-text-muted">
-                  <span className="font-semibold text-foreground">El candado: </span>
-                  si al terminar el piloto quieres seguir, el precio de la mensualidad ya está
-                  acordado desde el día 1 — antes de empezar. Sin sorpresas ni negociación al
-                  final.
-                </p>
-              </div>
-              <div className="mt-6 mb-24">
-                <InviteButton onClick={goNext}>Ver si tengo plaza</InviteButton>
-              </div>
-            </div>
-          )}
-
-          {step.type === "choice" && (
-            <>
-              <h2 className="max-w-[20ch] font-display text-[clamp(1.6rem,4vw,2.3rem)] font-semibold text-balance italic">
-                {step.q}
-              </h2>
-              <div className="mt-10 flex max-w-2xl flex-wrap justify-center gap-3">
-                {step.options.map((opt, i) => {
-                  const selected = answers[step.key] === opt;
-                  return (
-                    <button
-                      key={opt}
-                      onClick={() => selectChoice(step.key, opt)}
-                      className={cn(
-                        "flex items-center gap-3 rounded-sm border px-5 py-3.5 text-[0.95rem] transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(.2,.9,.25,1.2)] active:scale-[0.96]",
-                        selected
-                          ? "border-accent-strong bg-accent-strong text-primary-foreground"
-                          : "border-foreground/20 bg-transparent text-foreground hover:-translate-y-0.5 hover:border-accent-strong hover:bg-accent-dim"
-                      )}
+        <div className="relative min-h-[420px] px-6 pb-24 sm:px-9">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step}
+              variants={stepVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="flex flex-col items-center text-center"
+            >
+              {step === 0 && (
+                <div className="flex flex-col items-center py-8">
+                  <p className="font-data text-xs font-semibold tracking-[0.22em] text-foreground/70 uppercase">
+                    Solo quedan
+                  </p>
+                  <div className="mt-3 flex items-end justify-center">
+                    <span className="font-display text-[clamp(4rem,16vw,7rem)] font-bold leading-none text-navy">
+                      3
+                    </span>
+                    <span
+                      className="font-display text-[clamp(2.4rem,9vw,4rem)] font-bold text-electric"
+                      style={{ animation: "cursor-blink 1s steps(1,end) infinite" }}
                     >
-                      <span>{opt}</span>
-                      <span
-                        className={cn(
-                          "rounded-[3px] border px-1.5 text-[0.68rem] tabular-nums",
-                          selected ? "border-primary-foreground/40" : "border-foreground/20 text-text-dim"
-                        )}
+                      |
+                    </span>
+                  </div>
+                  <p className="mt-3 font-data text-xs font-semibold tracking-[0.22em] text-foreground/70 uppercase">
+                    Plazas disponibles
+                  </p>
+                  <p className="mt-6 max-w-[38ch] text-sm text-text-muted">
+                    Implementación gratuita de nuestro asistente de IA para WhatsApp, 30 días, sin
+                    coste. A cambio, documentamos tu caso como referencia.
+                  </p>
+                  <NavyButton className="mt-8" onClick={goNext}>
+                    Quiero mi plaza
+                  </NavyButton>
+                </div>
+              )}
+
+              {step === 1 && (
+                <div className="flex w-full flex-col items-center py-6">
+                  <h2 className="max-w-[20ch] font-display text-[clamp(1.5rem,4vw,2.1rem)] font-semibold text-balance italic">
+                    ¿Qué tipo de clínica tienes?
+                  </h2>
+                  <div className="mt-9 flex w-full max-w-lg flex-col gap-3">
+                    {TIPO_OPTIONS.map((opt) => (
+                      <ChoiceCard
+                        key={opt.value}
+                        selected={tipo === opt.value}
+                        onClick={() => selectTipo(opt.value)}
                       >
-                        {i + 1}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </>
-          )}
+                        <span className="text-[0.95rem]">{opt.value}</span>
+                        <DataTag>{opt.tag}</DataTag>
+                      </ChoiceCard>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-          {step.type === "contact" && (
-            <>
-              <h2 className="max-w-[22ch] font-display text-[clamp(1.4rem,3.2vw,2rem)] font-semibold text-balance italic">
-                {step.q}
-              </h2>
-              <p className="mt-3 max-w-[44ch] text-sm text-text-muted">{step.sub}</p>
-              <div className="mt-8 flex w-full max-w-md flex-col gap-5 text-left">
-                <Field
-                  label="Nombre completo"
-                  value={answers.nombre}
-                  onChange={(v) => setAnswers((a) => ({ ...a, nombre: v }))}
-                />
-                <Field
-                  label="Email"
-                  type="email"
-                  value={answers.email}
-                  onChange={(v) => setAnswers((a) => ({ ...a, email: v }))}
-                />
-                <Field
-                  label="Teléfono"
-                  type="tel"
-                  placeholder="+34 600 000 000"
-                  value={answers.telefono}
-                  onChange={(v) => setAnswers((a) => ({ ...a, telefono: v }))}
-                />
-                <Field
-                  label="Nombre de la clínica (opcional)"
-                  value={answers.clinica}
-                  onChange={(v) => setAnswers((a) => ({ ...a, clinica: v }))}
-                />
-              </div>
-              <div className="mt-8 mb-20">
-                <InviteButton disabled={!contactValid} onClick={goNext}>
-                  Solicitar mi plaza
-                </InviteButton>
-              </div>
-            </>
-          )}
+              {step === 2 && (
+                <div className="flex w-full flex-col items-center py-6">
+                  <h2 className="max-w-[22ch] font-display text-[clamp(1.5rem,4vw,2.1rem)] font-semibold text-balance italic">
+                    ¿Cuál es tu mayor problema hoy?
+                  </h2>
+                  <div className="mt-9 flex w-full max-w-lg flex-col gap-3">
+                    {DOLOR_OPTIONS.map((opt) => (
+                      <ChoiceCard
+                        key={opt.value}
+                        selected={dolor === opt.value}
+                        onClick={() => selectDolor(opt.value)}
+                      >
+                        <span className="text-[0.95rem]">{opt.value}</span>
+                        {opt.tag && <DataTag>{opt.tag}</DataTag>}
+                      </ChoiceCard>
+                    ))}
+                  </div>
+                  <AnimatePresence>
+                    {dolor && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.35 }}
+                        className="mt-8 w-full max-w-lg border-t border-border/60 pt-6"
+                      >
+                        <p className="text-xs font-medium text-text-muted">
+                          ¿Cuántos mensajes de pacientes recibís?
+                        </p>
+                        <div className="mt-3 flex flex-wrap justify-center gap-2">
+                          {VOLUMEN_OPTIONS.map((v) => (
+                            <button
+                              key={v}
+                              onClick={() => selectVolumen(v)}
+                              className={cn(
+                                "rounded-full border px-4 py-2 text-[0.82rem] transition-colors",
+                                volumen === v
+                                  ? "border-electric bg-electric-dim text-navy"
+                                  : "border-foreground/15 text-foreground/80 hover:border-electric hover:bg-electric-dim"
+                              )}
+                            >
+                              {v}
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
 
-          {step.type === "success" && (
-            <>
-              <div className="mb-5 flex size-14 items-center justify-center rounded-full border border-accent-strong text-accent-strong">
-                <Check className="size-5" />
-              </div>
-              <h2 className="max-w-[20ch] font-display text-[clamp(1.5rem,3.6vw,2.1rem)] font-semibold text-balance italic">
-                Solicitud recibida{answers.nombre ? `, ${answers.nombre.split(" ")[0]}` : ""}.
-              </h2>
-              <p className="mt-4 max-w-[52ch] text-text-muted">
-                Revisamos tu clínica y te contactamos en menos de 24h a{" "}
-                <strong className="text-foreground">{answers.email}</strong> si hay plaza
-                disponible. Al terminar los 30 días verás resultados reales — citas agendadas,
-                leads recuperados, no-shows reducidos — y decides si continúas. Sin presión.
-              </p>
-            </>
-          )}
+              {step === 3 && (
+                <div className="flex w-full flex-col items-center py-6">
+                  <h2 className="max-w-[22ch] font-display text-[clamp(1.3rem,3.4vw,1.9rem)] font-semibold text-balance italic">
+                    Últimos datos para tu solicitud
+                  </h2>
+                  <div className="mt-8 flex w-full max-w-md flex-col gap-5 text-left">
+                    <DataField label="Nombre completo" value={nombre} onChange={setNombre} />
+                    <DataField label="Clínica" value={clinica} onChange={setClinica} />
+                    <div className="flex flex-col gap-1.5">
+                      <label className="font-data text-[0.62rem] font-semibold tracking-[0.14em] text-text-dim uppercase">
+                        Teléfono WhatsApp
+                      </label>
+                      <div className="flex items-center gap-2 border-b-2 border-foreground/20 focus-within:border-electric">
+                        <span className="text-base text-text-dim">+34</span>
+                        <input
+                          type="tel"
+                          value={telefono}
+                          onChange={(e) => setTelefono(e.target.value)}
+                          placeholder="600 000 000"
+                          className="w-full bg-transparent py-2 text-base text-foreground outline-none placeholder:text-text-dim/60"
+                        />
+                      </div>
+                    </div>
+                    <DataField label="Ciudad" value={ciudad} onChange={setCiudad} />
+                  </div>
+                  <p className="mt-5 max-w-md text-[0.68rem] leading-relaxed text-text-dim">
+                    Revisamos cada solicitud a mano. Si tu clínica encaja con el perfil, te
+                    confirmamos tu plaza en menos de 24h. Si decides continuar tras el piloto, el
+                    precio de la mensualidad queda acordado desde el día 1 — sin sorpresas.
+                  </p>
+                  <NavyButton className="mt-7 mb-16 w-full max-w-md justify-center" disabled={!datosValid} onClick={goNext}>
+                    Solicitar mi plaza
+                  </NavyButton>
+                </div>
+              )}
+
+              {step === 4 && (
+                <div className="flex flex-col items-center py-10">
+                  <Seal />
+                  <h2 className="mt-7 max-w-[22ch] font-display text-[clamp(1.4rem,3.6vw,2rem)] font-semibold text-balance italic">
+                    Solicitud recibida{nombre ? `, ${nombre.split(" ")[0]}` : ""}.
+                  </h2>
+                  <p className="mt-3 font-data text-[0.68rem] font-semibold tracking-[0.14em] text-text-dim uppercase">
+                    Referencia {referencia}
+                  </p>
+                  <p className="mt-4 max-w-[48ch] text-sm text-text-muted">
+                    Revisamos tu clínica y te contactamos en menos de 24h si hay plaza disponible.
+                  </p>
+                  <a
+                    href={whatsappHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-7 inline-flex items-center gap-2 rounded-sm bg-[#25D366] px-7 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                  >
+                    Escríbenos por WhatsApp
+                  </a>
+                  <button
+                    onClick={() => {
+                      setStep(0);
+                      setTipo(null);
+                      setDolor(null);
+                      setVolumen(null);
+                    }}
+                    className="mt-4 text-xs text-text-dim underline-offset-4 hover:text-navy hover:underline"
+                  >
+                    Volver al inicio
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
+
+        {showBotnav && (
+          <div className="absolute inset-x-0 bottom-6 flex items-center justify-center gap-4">
+            <button
+              onClick={goBack}
+              disabled={step === 0}
+              aria-label="Anterior"
+              className="flex size-9 items-center justify-center rounded-full border border-foreground/15 text-text-muted transition-colors hover:border-electric hover:text-navy disabled:cursor-not-allowed disabled:opacity-25"
+            >
+              <ArrowLeft className="size-4" />
+            </button>
+            <button
+              onClick={() => {
+                if (step === 3) {
+                  if (datosValid) goNext();
+                } else {
+                  goNext();
+                }
+              }}
+              aria-label="Siguiente"
+              className={cn(
+                "flex size-9 items-center justify-center rounded-full border border-foreground/15 text-text-muted transition-colors hover:border-electric hover:text-navy",
+                !showFwd && "invisible"
+              )}
+            >
+              <ArrowRight className="size-4" />
+            </button>
+          </div>
+        )}
       </div>
-
-      {showBotnav && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-7 flex items-center justify-center gap-4">
-          <button
-            onClick={goBack}
-            disabled={current === 0}
-            aria-label="Anterior"
-            className="group pointer-events-auto flex size-9 items-center justify-center rounded-full border border-foreground/20 text-text-muted transition-[border-color,color,transform] duration-200 ease-[cubic-bezier(.2,.9,.25,1.2)] hover:border-accent-strong hover:text-foreground active:scale-90 disabled:cursor-not-allowed disabled:opacity-25 disabled:active:scale-100"
-          >
-            <ArrowLeft className="size-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
-          </button>
-          <span className="pointer-events-auto text-[0.68rem] tracking-wider text-text-dim">
-            Enter ↵ para continuar
-          </span>
-          <button
-            onClick={() => {
-              if (step.type === "contact") {
-                if (contactValid) goNext();
-              } else {
-                goNext();
-              }
-            }}
-            aria-label="Siguiente"
-            className={cn(
-              "group pointer-events-auto flex size-9 items-center justify-center rounded-full border border-foreground/20 text-text-muted transition-[border-color,color,transform] duration-200 ease-[cubic-bezier(.2,.9,.25,1.2)] hover:border-accent-strong hover:text-foreground active:scale-90",
-              !showFwd && "invisible"
-            )}
-          >
-            <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-          </button>
-        </div>
-      )}
     </div>
   );
 }
 
-function Seal({ className }: { className?: string }) {
+function CircuitCorners() {
+  const positions = ["top-3 left-3", "top-3 right-3", "bottom-3 left-3", "bottom-3 right-3"];
   return (
-    <div
-      className={cn("relative size-28 -rotate-3", className)}
-      style={{ animation: "seal-press 0.7s cubic-bezier(.2,.8,.2,1) both" }}
+    <>
+      {positions.map((p) => (
+        <span
+          key={p}
+          className={cn("absolute size-1.5 rounded-full bg-electric", p)}
+          style={{ animation: "node-pulse 3s ease-in-out infinite" }}
+        />
+      ))}
+    </>
+  );
+}
+
+function DataTag({ children }: { children: string }) {
+  return (
+    <span
+      className="shrink-0 rounded-[3px] px-2 py-1 font-data text-[0.6rem] font-semibold tracking-[0.12em] text-electric uppercase"
+      style={{ background: "var(--electric-dim)" }}
     >
-      {/* Holographic-foil ring — the luxury/futurist fusion: a security-hologram
-          band, the same device banknotes and certificates use, spun slowly. */}
-      <div
-        className="absolute inset-0 rounded-full"
-        style={{
-          background:
-            "conic-gradient(from 0deg, #a68a3f, #d8cd94, #7fd9c4, #9db4e8, #c79ee0, #d8cd94, #a68a3f)",
-          animation: "holo-spin 8s linear infinite",
-        }}
+      {children}
+    </span>
+  );
+}
+
+function ChoiceCard({
+  children,
+  selected,
+  onClick,
+}: {
+  children: React.ReactNode;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <motion.button
+      onClick={onClick}
+      whileHover={{ x: 4 }}
+      whileTap={{ scale: 0.99 }}
+      transition={{ duration: 0.15 }}
+      className={cn(
+        "flex items-center justify-between gap-4 border-y border-r border-foreground/10 bg-transparent px-5 py-4 text-left transition-colors",
+        selected ? "border-l-[3px] border-l-electric bg-electric-dim" : "border-l border-l-foreground/10"
+      )}
+    >
+      {children}
+    </motion.button>
+  );
+}
+
+function DataField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="font-data text-[0.62rem] font-semibold tracking-[0.14em] text-text-dim uppercase">
+        {label}
+      </label>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="border-b-2 border-foreground/20 bg-transparent py-2 text-base text-foreground outline-none focus:border-electric"
       />
-      <div
-        className="absolute inset-[3px] flex flex-col items-center justify-center gap-1 rounded-full text-primary-foreground shadow-[0_10px_24px_-8px_rgba(31,61,43,0.5)]"
-        style={{ background: "var(--accent-strong)" }}
-      >
-        <svg viewBox="0 0 112 112" aria-hidden className="absolute inset-0">
-          <defs>
-            <path id="seal-rim" d="M 56,56 m -45,0 a 45,45 0 1,1 90,0 a 45,45 0 1,1 -90,0" fill="none" />
-          </defs>
-          <text fill="var(--gold)" fontSize="6.4" letterSpacing="2" className="font-sans">
-            <textPath href="#seal-rim" startOffset="1%">
-              INTELIGENCIA ARTIFICIAL &#8226; INTELIGENCIA ARTIFICIAL &#8226;
-            </textPath>
-          </text>
-        </svg>
-        <span className="relative font-display text-4xl leading-none font-bold">3</span>
-        <span className="relative text-[0.56rem] tracking-[0.16em] uppercase">plazas</span>
-      </div>
     </div>
   );
 }
 
-function InviteButton({
+function NavyButton({
   children,
   disabled,
   onClick,
+  className,
 }: {
   children: React.ReactNode;
   disabled?: boolean;
   onClick?: () => void;
+  className?: string;
 }) {
   return (
     <button
       disabled={disabled}
       onClick={onClick}
-      className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-sm border border-accent-strong bg-accent-strong px-7 py-3 text-sm font-medium tracking-wide text-primary-foreground uppercase shadow-[0_10px_22px_-10px_rgba(31,61,43,0.6)] transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(.2,.9,.25,1.2)] hover:bg-transparent hover:text-accent-strong active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-accent-strong disabled:hover:text-primary-foreground disabled:active:scale-100"
+      className={cn(
+        "group inline-flex items-center gap-2.5 rounded-sm border border-navy bg-navy px-7 py-3 text-sm font-medium tracking-wide text-primary-foreground uppercase transition-[background-color,border-color] duration-150 hover:border-electric hover:bg-[color-mix(in_srgb,var(--navy)_95%,white)] disabled:cursor-not-allowed disabled:opacity-35",
+        className
+      )}
     >
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 -left-1/4 w-1/3 -skew-x-12 opacity-0 transition-[transform,opacity] duration-700 ease-out -translate-x-[10%] group-hover:translate-x-[480%] group-hover:opacity-100"
-        style={{
-          background:
-            "linear-gradient(100deg, transparent, rgba(166,138,63,0.65) 30%, rgba(127,217,196,0.55) 50%, rgba(199,158,224,0.6) 65%, transparent)",
-        }}
-      />
-      <span className="relative">{children}</span>
-      <ArrowRight className="relative size-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
+      {children}
+      <ArrowRight className="size-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
     </button>
   );
 }
 
-function Field({
-  label,
-  value,
-  onChange,
-  type = "text",
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  type?: string;
-  placeholder?: string;
-}) {
+function Seal() {
   return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-xs tracking-wide text-text-dim uppercase">{label}</label>
-      <input
-        type={type}
-        value={value}
-        placeholder={placeholder}
-        onChange={(e) => onChange(e.target.value)}
-        className="border-b-2 border-foreground/25 bg-transparent px-1 py-2 text-base text-foreground outline-none placeholder:text-text-dim/60 focus-visible:border-accent-strong"
+    <div
+      className="relative size-20"
+      style={{ animation: "seal-press 0.8s cubic-bezier(.2,.8,.2,1) both" }}
+    >
+      <div
+        className="absolute inset-0 rounded-full"
+        style={{
+          background: "conic-gradient(from 0deg, #1a1a3e, #4f46e5, #c9a84c, #1a1a3e)",
+          animation: "holo-spin 8s linear infinite",
+        }}
       />
+      <div
+        className="absolute inset-[3px] flex flex-col items-center justify-center gap-0.5 rounded-full text-primary-foreground shadow-[0_10px_24px_-8px_rgba(26,26,62,0.5)]"
+        style={{ background: "var(--navy)" }}
+      >
+        <svg viewBox="0 0 80 80" aria-hidden className="absolute inset-0">
+          <defs>
+            <path id="seal-rim" d="M 40,40 m -32,0 a 32,32 0 1,1 64,0 a 32,32 0 1,1 -64,0" fill="none" />
+          </defs>
+          <text fill="var(--gold)" fontSize="4.6" letterSpacing="1.4" className="font-sans">
+            <textPath href="#seal-rim" startOffset="1%">
+              SELECCIÓN &#8226; EMBERLY AI &#8226; 2025 &#8226;
+            </textPath>
+          </text>
+        </svg>
+        <span className="relative font-display text-2xl leading-none font-bold">3</span>
+        <span className="relative text-[0.42rem] tracking-[0.14em] uppercase">plazas</span>
+      </div>
     </div>
   );
 }

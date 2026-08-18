@@ -10,9 +10,13 @@
   --font-sans: var(--font-archivo);
   --font-display: var(--font-bodoni);
   --font-heading: var(--font-display);
+  --font-data: var(--font-exo2);
   --color-paper: var(--paper);
   --color-paper-soft: var(--paper-soft);
   --color-ink-soft: var(--ink-soft);
+  --color-navy: var(--navy);
+  --color-electric: var(--electric);
+  --color-electric-dim: var(--electric-dim);
   --color-accent-strong: var(--accent-strong);
   --color-accent-dim: var(--accent-dim);
   --color-gold: var(--gold);
@@ -57,55 +61,73 @@
 }
 
 :root {
-  /* Editorial-luxury invitation. Bone paper, ink, one committed field of
-     apothecary green, a thin gold rule. Single theme — no dark variant. */
-  --background: #f6f1e7;
-  --foreground: #221f19;
-  --card: #efe8d9;
-  --card-foreground: #221f19;
-  --popover: #f6f1e7;
-  --popover-foreground: #221f19;
-  --primary: #1f3d2b;
-  --primary-foreground: #f6f1e7;
-  --secondary: #efe8d9;
-  --secondary-foreground: #221f19;
-  --muted: #efe8d9;
-  --muted-foreground: #5b5648;
-  --accent: #1f3d2b;
-  --accent-foreground: #f6f1e7;
+  /* "Invitación de acceso restringido — editorial con nervio de IA".
+     Bone paper + navy authority + electric-indigo system signal + a gold
+     seal accent. Single theme — no dark variant. Palette pinned by the user. */
+  --background: #f5f0e8;
+  --foreground: #1a1a1a;
+  --card: #fdfaf4;
+  --card-foreground: #1a1a1a;
+  --popover: #f5f0e8;
+  --popover-foreground: #1a1a1a;
+  --primary: #1a1a3e;
+  --primary-foreground: #f5f0e8;
+  --secondary: #fdfaf4;
+  --secondary-foreground: #1a1a1a;
+  --muted: #fdfaf4;
+  --muted-foreground: #4b4b4b;
+  --accent: #4f46e5;
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.55 0.19 25);
-  --border: rgba(34, 31, 25, 0.16);
-  --input: rgba(34, 31, 25, 0.16);
-  --ring: #1f3d2b;
-  --chart-1: #1f3d2b;
-  --chart-2: #a68a3f;
-  --chart-3: #5b5648;
-  --chart-4: #8a8370;
-  --chart-5: #efe8d9;
+  --border: rgba(26, 26, 26, 0.14);
+  --input: rgba(26, 26, 26, 0.14);
+  --ring: #4f46e5;
+  --chart-1: #1a1a3e;
+  --chart-2: #4f46e5;
+  --chart-3: #c9a84c;
+  --chart-4: #7a7a7a;
+  --chart-5: #fdfaf4;
   --radius: 0.25rem;
-  --sidebar: #efe8d9;
-  --sidebar-foreground: #221f19;
-  --sidebar-primary: #1f3d2b;
-  --sidebar-primary-foreground: #f6f1e7;
-  --sidebar-accent: #efe8d9;
-  --sidebar-accent-foreground: #221f19;
-  --sidebar-border: rgba(34, 31, 25, 0.16);
-  --sidebar-ring: #1f3d2b;
+  --sidebar: #fdfaf4;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #1a1a3e;
+  --sidebar-primary-foreground: #f5f0e8;
+  --sidebar-accent: #fdfaf4;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: rgba(26, 26, 26, 0.14);
+  --sidebar-ring: #4f46e5;
 
   /* Emberly brand tokens */
-  --paper: #f6f1e7;
-  --paper-soft: #efe8d9;
-  --ink-soft: #5b5648;
-  --accent-strong: #1f3d2b;
-  --accent-dim: rgba(31, 61, 43, 0.1);
-  --gold: #a68a3f;
-  --text-muted: #5b5648;
-  --text-dim: #8a8370;
+  --paper: #f5f0e8;
+  --paper-soft: #fdfaf4;
+  --ink-soft: #4b4b4b;
+  --navy: #1a1a3e;
+  --electric: #4f46e5;
+  --electric-dim: rgba(79, 70, 229, 0.08);
+  --accent-strong: #1a1a3e;
+  --accent-dim: rgba(26, 26, 62, 0.06);
+  --gold: #c9a84c;
+  --text-muted: #4b4b4b;
+  --text-dim: #7a7a7a;
+}
+
+@layer utilities {
+  /* Technical grid — fine drafting lines behind the card, the "plano técnico" texture. */
+  .bg-tech-grid {
+    background-image:
+      linear-gradient(rgba(26, 26, 62, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26, 26, 62, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+  }
+  *:focus-visible {
+    outline: 2px solid var(--electric);
+    outline-offset: 2px;
   }
   body {
     @apply bg-background text-foreground;
@@ -131,4 +153,12 @@
 @keyframes holo-sweep {
   0% { transform: translateX(-30%) rotate(20deg); }
   100% { transform: translateX(160%) rotate(20deg); }
+}
+@keyframes cursor-blink {
+  0%, 45% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@keyframes node-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
