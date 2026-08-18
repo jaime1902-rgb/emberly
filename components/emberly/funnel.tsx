@@ -1,102 +1,81 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, MessageCircle, Phone, Workflow } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EmberlyMark } from "./mark";
-import { LiquidButton } from "@/components/ui/liquid-glass-button";
-import DisplayCards from "@/components/ui/display-cards";
+import { MetalButton } from "@/components/ui/liquid-glass-button";
 
-type ChoiceKey = "negocio" | "dolor" | "horas";
+type ChoiceKey = "tipo" | "canal" | "dolor";
 
 type Step =
   | { type: "cover" }
-  | { type: "choice"; key: ChoiceKey; eyebrow: string; q: string; options: string[] }
-  | { type: "contact"; eyebrow: string; q: string; sub: string }
+  | { type: "offer" }
+  | { type: "choice"; key: ChoiceKey; q: string; options: string[] }
+  | { type: "contact"; q: string; sub: string }
   | { type: "success" };
 
 const STEPS: Step[] = [
   { type: "cover" },
+  { type: "offer" },
   {
     type: "choice",
-    key: "negocio",
-    eyebrow: "Paso 1 de 4",
-    q: "¿Qué tipo de negocio tienes?",
-    options: [
-      "Pyme o negocio local",
-      "Agencia / freelancer",
-      "Empresa mediana o corporativa",
-      "Otro / aún no lo sé",
-    ],
+    key: "tipo",
+    q: "¿Qué tipo de clínica tienes?",
+    options: ["Estética", "Capilar", "Dental", "Otra especialidad"],
+  },
+  {
+    type: "choice",
+    key: "canal",
+    q: "¿Ya captáis pacientes por WhatsApp o Instagram?",
+    options: ["Sí, activamente", "Algo, pero sin gestionarlo bien", "Todavía no"],
   },
   {
     type: "choice",
     key: "dolor",
-    eyebrow: "Paso 2 de 4",
-    q: "¿Qué te está quitando más tiempo ahora mismo?",
+    q: "¿Qué es lo que más os está pasando ahora mismo?",
     options: [
-      "Atención al cliente y llamadas",
-      "Captación y seguimiento de leads",
-      "Procesos internos repetitivos",
-      "No lo sé, quiero que me asesoren",
+      "Se nos escapan leads sin contestar",
+      "El equipo pierde demasiado tiempo respondiendo",
+      "Las dos cosas",
+      "No estoy seguro",
     ],
   },
   {
-    type: "choice",
-    key: "horas",
-    eyebrow: "Paso 3 de 4",
-    q: "¿Cuántas horas a la semana dedicáis a tareas repetitivas?",
-    options: ["Menos de 5h", "Entre 5 y 15h", "Entre 15 y 30h", "Más de 30h"],
-  },
-  {
     type: "contact",
-    eyebrow: "Último paso",
-    q: "¿Dónde te contactamos para agendar?",
-    sub: "Con esto te proponemos un hueco para la consultoría — sin coste, sin compromiso.",
+    q: "¿Dónde te contactamos si hay plaza?",
+    sub: "Revisamos cada solicitud a mano. Si tu clínica encaja con el perfil, te confirmamos tu plaza en menos de 24h.",
   },
   { type: "success" },
 ];
 
-const serviceCards = [
+const offerPoints: { label: string; body: string }[] = [
   {
-    icon: <MessageCircle className="size-4 text-blue-300" />,
-    title: "Chatbots",
-    description: "Atención 24/7 que convierte",
-    date: "Servicio",
-    iconClassName: "text-blue-300",
-    titleClassName: "text-white",
-    className:
-      "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
+    label: "Qué es",
+    body: "Implementamos gratis nuestro asistente de IA en tu clínica durante 30 días. Funciona desde el día 1. No pagas nada mientras dura el piloto.",
   },
   {
-    icon: <Phone className="size-4 text-blue-300" />,
-    title: "Voice Agents",
-    description: "Llamadas gestionadas por IA",
-    date: "Servicio",
-    iconClassName: "text-blue-300",
-    titleClassName: "text-white",
-    className:
-      "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
+    label: "Qué recibe tu clínica",
+    body: "Un asistente que contesta y agenda pacientes por WhatsApp e Instagram al instante, 24/7. Implementación, métricas del periodo y soporte directo incluidos.",
   },
   {
-    icon: <Workflow className="size-4 text-blue-300" />,
-    title: "Automatizaciones",
-    description: "Procesos que se ejecutan solos",
-    date: "Servicio",
-    iconClassName: "text-blue-300",
-    titleClassName: "text-white",
-    className: "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
+    label: "Por qué es gratis",
+    body: "Acabamos de llegar a Madrid. Tenemos la tecnología, nos falta el caso real. A cambio del piloto, documentamos resultados reales: citas, leads, no-shows.",
+  },
+  {
+    label: "Por qué solo 3",
+    body: "Cada implementación es atención personalizada. No se puede hacer bien con veinte clínicas a la vez, así que limitamos las plazas para que el resultado sea real.",
   },
 ];
 
 const emptyAnswers = {
-  negocio: null as string | null,
+  tipo: null as string | null,
+  canal: null as string | null,
   dolor: null as string | null,
-  horas: null as string | null,
   nombre: "",
   email: "",
   telefono: "",
-  empresa: "",
+  clinica: "",
 };
 
 export function EmberlyFunnel() {
@@ -121,10 +100,15 @@ export function EmberlyFunnel() {
     return answers.nombre.trim().length > 1 && emailOk && phoneOk;
   }, [answers]);
 
+  function selectChoice(key: ChoiceKey, value: string) {
+    setAnswers((a) => ({ ...a, [key]: value }));
+    setTimeout(goNext, 260);
+  }
+
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === "Enter") {
-        if (step.type === "cover") goNext();
+        if (step.type === "cover" || step.type === "offer") goNext();
         else if (step.type === "contact" && contactValid) goNext();
       }
       if (e.key >= "1" && e.key <= "4" && step.type === "choice") {
@@ -141,14 +125,10 @@ export function EmberlyFunnel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, contactValid]);
 
-  function selectChoice(key: ChoiceKey, value: string) {
-    setAnswers((a) => ({ ...a, [key]: value }));
-    setTimeout(goNext, 260);
-  }
-
   const progress = (current / (STEPS.length - 1)) * 100;
   const showBotnav = step.type !== "success";
-  const showFwd = step.type !== "choice" && step.type !== "success";
+  const showFwd = step.type === "cover" || step.type === "offer" || step.type === "contact";
+  const topAligned = step.type === "offer" || step.type === "contact";
 
   return (
     <div className="bg-grid relative flex h-svh flex-col">
@@ -164,7 +144,7 @@ export function EmberlyFunnel() {
           <EmberlyMark className="h-[23px] w-[26px] drop-shadow-[0_0_10px_rgba(47,141,255,0.5)]" />
           <span className="font-logo text-lg font-semibold">Emberly</span>
         </div>
-        <div className="font-mono text-xs tracking-wider text-text-dim">
+        <div className="font-mono text-xs tracking-wider text-text-dim tabular-nums">
           <b className="font-medium text-accent-strong">{String(current + 1).padStart(2, "0")}</b> / {STEPS.length}
         </div>
       </div>
@@ -180,8 +160,8 @@ export function EmberlyFunnel() {
         <div
           key={current}
           className={cn(
-            "absolute inset-0 flex flex-col items-center overflow-y-auto px-6 py-20 text-center transition-all duration-500 sm:px-10",
-            step.type === "contact" ? "justify-start pt-14" : "justify-center",
+            "absolute inset-0 flex flex-col items-center overflow-y-auto px-6 py-16 text-center transition-all duration-500 sm:px-10",
+            topAligned ? "justify-start pt-10" : "justify-center",
             entered ? "translate-x-0 opacity-100" : "translate-x-10 opacity-0"
           )}
         >
@@ -195,33 +175,61 @@ export function EmberlyFunnel() {
                     "radial-gradient(circle, rgba(47,141,255,0.28) 0%, rgba(47,141,255,0.09) 42%, transparent 70%)",
                 }}
               />
-              <div className="mx-auto mb-6 w-[clamp(84px,12vw,120px)] drop-shadow-[0_0_22px_rgba(47,141,255,0.5)]">
+              <div className="w-[clamp(56px,7vw,72px)] drop-shadow-[0_0_18px_rgba(47,141,255,0.5)]">
                 <EmberlyMark />
               </div>
-              <h1 className="font-logo text-[clamp(2.4rem,7vw,4rem)] font-semibold">Emberly</h1>
-              <p className="mt-2.5 flex items-center justify-center gap-2.5 font-mono text-xs tracking-[0.26em] text-accent-strong uppercase">
-                <span className="size-1.5 animate-[dot-pulse_2s_ease-in-out_infinite] rounded-full bg-accent-strong shadow-[0_0_8px_2px_var(--primary)]" />
-                AI Automation Studio
+
+              <TicketBadge className="mt-6" />
+
+              <h1 className="mt-6 max-w-[15ch] font-display text-[clamp(1.9rem,4.6vw,2.9rem)] font-extrabold text-balance">
+                30 días gratis. Resultados reales.
+              </h1>
+              <p className="mt-4 max-w-[44ch] text-sm text-text-muted sm:text-base">
+                Emberly implementa gratis su asistente de WhatsApp e Instagram en 3 clínicas de
+                Madrid durante 30 días. Si funciona, sigues. Si no, no pagas nada.
               </p>
-              <p className="mt-6 max-w-[44ch] text-text-muted">
-                Descubre en menos de un minuto qué puedes automatizar en tu negocio — y agenda tu
-                consultoría gratuita.
-              </p>
-              <div className="mt-8 mb-16 w-full max-w-md scale-[0.6] opacity-90 sm:mb-20 sm:scale-75">
-                <DisplayCards cards={serviceCards} />
+              <div className="mt-7 mb-16">
+                <MetalButton variant="gold" onClick={goNext}>
+                  Quiero mi plaza <ArrowRight className="size-4" />
+                </MetalButton>
               </div>
-              <LiquidButton onClick={goNext}>
-                Empezar <ArrowRight className="size-4" />
-              </LiquidButton>
             </>
+          )}
+
+          {step.type === "offer" && (
+            <div className="w-full max-w-xl text-left">
+              <h2 className="font-display text-[clamp(1.6rem,3.6vw,2.3rem)] font-bold text-balance">
+                La oferta de las 3 plazas.
+              </h2>
+              <dl className="mt-6 flex flex-col gap-5">
+                {offerPoints.map((p) => (
+                  <div key={p.label}>
+                    <dt className="text-sm font-semibold text-accent-strong">{p.label}</dt>
+                    <dd className="mt-1 max-w-[62ch] text-[0.94rem] leading-relaxed text-text-muted">
+                      {p.body}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+              <div className="mt-6 border-t border-border pt-5">
+                <p className="text-sm leading-relaxed text-text-muted">
+                  <span className="font-semibold text-foreground">El candado: </span>
+                  si al terminar el piloto quieres seguir, el precio de la mensualidad ya está
+                  acordado desde el día 1 — antes de empezar. Sin sorpresas ni negociación al
+                  final.
+                </p>
+              </div>
+              <div className="mt-7 mb-20">
+                <MetalButton variant="gold" onClick={goNext}>
+                  Ver si tengo plaza <ArrowRight className="size-4" />
+                </MetalButton>
+              </div>
+            </div>
           )}
 
           {step.type === "choice" && (
             <>
-              <div className="mb-4 font-mono text-xs tracking-wider text-accent-strong uppercase">
-                {step.eyebrow}
-              </div>
-              <h2 className="max-w-[18ch] font-display text-[clamp(1.7rem,4.4vw,2.7rem)] font-bold text-balance">
+              <h2 className="max-w-[20ch] font-display text-[clamp(1.7rem,4.4vw,2.5rem)] font-bold text-balance">
                 {step.q}
               </h2>
               <div className="mt-11 flex max-w-2xl flex-wrap justify-center gap-3">
@@ -239,7 +247,7 @@ export function EmberlyFunnel() {
                       )}
                     >
                       <span>{opt}</span>
-                      <span className="rounded-[5px] border border-border px-1.5 font-mono text-[0.68rem] text-text-dim">
+                      <span className="rounded-[5px] border border-border px-1.5 font-mono text-[0.68rem] text-text-dim tabular-nums">
                         {i + 1}
                       </span>
                     </button>
@@ -251,14 +259,11 @@ export function EmberlyFunnel() {
 
           {step.type === "contact" && (
             <>
-              <div className="mb-4 font-mono text-xs tracking-wider text-accent-strong uppercase">
-                {step.eyebrow}
-              </div>
-              <h2 className="max-w-[20ch] font-display text-[clamp(1.4rem,3.2vw,2.1rem)] font-bold text-balance">
+              <h2 className="max-w-[22ch] font-display text-[clamp(1.5rem,3.4vw,2.1rem)] font-bold text-balance">
                 {step.q}
               </h2>
               <p className="mt-3 max-w-[44ch] text-sm text-text-muted">{step.sub}</p>
-              <div className="mt-6 flex w-full max-w-md flex-col gap-2.5 text-left">
+              <div className="mt-7 flex w-full max-w-md flex-col gap-2.5 text-left">
                 <Field
                   label="Nombre completo"
                   value={answers.nombre}
@@ -278,14 +283,16 @@ export function EmberlyFunnel() {
                   onChange={(v) => setAnswers((a) => ({ ...a, telefono: v }))}
                 />
                 <Field
-                  label="Empresa (opcional)"
-                  value={answers.empresa}
-                  onChange={(v) => setAnswers((a) => ({ ...a, empresa: v }))}
+                  label="Nombre de la clínica (opcional)"
+                  value={answers.clinica}
+                  onChange={(v) => setAnswers((a) => ({ ...a, clinica: v }))}
                 />
               </div>
-              <LiquidButton className="mt-5 mb-20" size="lg" disabled={!contactValid} onClick={goNext}>
-                Agendar consultoría <ArrowRight className="size-4" />
-              </LiquidButton>
+              <div className="mt-6 mb-20">
+                <MetalButton variant="gold" disabled={!contactValid} onClick={goNext}>
+                  Solicitar mi plaza <ArrowRight className="size-4" />
+                </MetalButton>
+              </div>
             </>
           )}
 
@@ -294,12 +301,14 @@ export function EmberlyFunnel() {
               <div className="mb-5 flex size-15 items-center justify-center rounded-full bg-accent-dim text-accent-strong">
                 <Check className="size-6" />
               </div>
-              <h2 className="font-display text-[clamp(1.7rem,4.4vw,2.7rem)] font-bold text-balance">
+              <h2 className="max-w-[20ch] font-display text-[clamp(1.6rem,4vw,2.4rem)] font-bold text-balance">
                 Solicitud recibida{answers.nombre ? `, ${answers.nombre.split(" ")[0]}` : ""}.
               </h2>
-              <p className="mt-4 max-w-[44ch] text-text-muted">
-                Te escribimos a <strong className="text-foreground">{answers.email}</strong> en
-                menos de 24h laborables para agendar tu consultoría gratuita.
+              <p className="mt-4 max-w-[52ch] text-text-muted">
+                Revisamos tu clínica y te contactamos en menos de 24h a{" "}
+                <strong className="text-foreground">{answers.email}</strong> si hay plaza
+                disponible. Al terminar los 30 días verás resultados reales — citas agendadas,
+                leads recuperados, no-shows reducidos — y decides si continúas. Sin presión.
               </p>
             </>
           )}
@@ -341,6 +350,26 @@ export function EmberlyFunnel() {
   );
 }
 
+function TicketBadge({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        "relative flex -rotate-2 items-center gap-4 rounded-2xl border-2 border-dashed border-accent-strong/50 bg-navy-soft/80 px-6 py-3 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.65)]",
+        className
+      )}
+    >
+      <span className="font-mono text-3xl leading-none font-medium tabular-nums text-foreground">
+        3<span className="text-text-dim">/3</span>
+      </span>
+      <span className="text-left font-mono text-[0.62rem] leading-tight tracking-[0.16em] text-accent-strong uppercase">
+        Plazas
+        <br />
+        disponibles
+      </span>
+    </div>
+  );
+}
+
 function Field({
   label,
   value,
@@ -356,7 +385,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="font-mono text-xs tracking-wider text-text-dim uppercase">{label}</label>
+      <label className="text-xs tracking-wide text-text-dim uppercase">{label}</label>
       <input
         type={type}
         value={value}
