@@ -120,3 +120,11 @@
   60% { opacity: 1; transform: scale(0.94) rotate(-4deg); }
   100% { opacity: 1; transform: scale(1) rotate(-3deg); }
 }
+@keyframes holo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes holo-sweep {
+  0% { transform: translateX(-30%) rotate(20deg); }
+  100% { transform: translateX(160%) rotate(20deg); }
+}

@@ -366,27 +366,36 @@ export function EmberlyFunnel() {
 function Seal({ className }: { className?: string }) {
   return (
     <div
-      className={cn(
-        "relative flex size-28 -rotate-3 flex-col items-center justify-center gap-1 rounded-full border-[3px] border-double border-gold text-primary-foreground shadow-[0_10px_24px_-8px_rgba(31,61,43,0.5)]",
-        className
-      )}
-      style={{
-        background: "var(--accent-strong)",
-        animation: "seal-press 0.7s cubic-bezier(.2,.8,.2,1) both",
-      }}
+      className={cn("relative size-28 -rotate-3", className)}
+      style={{ animation: "seal-press 0.7s cubic-bezier(.2,.8,.2,1) both" }}
     >
-      <svg viewBox="0 0 112 112" aria-hidden className="absolute inset-0">
-        <defs>
-          <path id="seal-rim" d="M 56,56 m -45,0 a 45,45 0 1,1 90,0 a 45,45 0 1,1 -90,0" fill="none" />
-        </defs>
-        <text fill="var(--gold)" fontSize="6.4" letterSpacing="2" className="font-sans">
-          <textPath href="#seal-rim" startOffset="1%">
-            INTELIGENCIA ARTIFICIAL &#8226; INTELIGENCIA ARTIFICIAL &#8226;
-          </textPath>
-        </text>
-      </svg>
-      <span className="relative font-display text-4xl leading-none font-bold">3</span>
-      <span className="relative text-[0.56rem] tracking-[0.16em] uppercase">plazas</span>
+      {/* Holographic-foil ring — the luxury/futurist fusion: a security-hologram
+          band, the same device banknotes and certificates use, spun slowly. */}
+      <div
+        className="absolute inset-0 rounded-full"
+        style={{
+          background:
+            "conic-gradient(from 0deg, #a68a3f, #d8cd94, #7fd9c4, #9db4e8, #c79ee0, #d8cd94, #a68a3f)",
+          animation: "holo-spin 8s linear infinite",
+        }}
+      />
+      <div
+        className="absolute inset-[3px] flex flex-col items-center justify-center gap-1 rounded-full text-primary-foreground shadow-[0_10px_24px_-8px_rgba(31,61,43,0.5)]"
+        style={{ background: "var(--accent-strong)" }}
+      >
+        <svg viewBox="0 0 112 112" aria-hidden className="absolute inset-0">
+          <defs>
+            <path id="seal-rim" d="M 56,56 m -45,0 a 45,45 0 1,1 90,0 a 45,45 0 1,1 -90,0" fill="none" />
+          </defs>
+          <text fill="var(--gold)" fontSize="6.4" letterSpacing="2" className="font-sans">
+            <textPath href="#seal-rim" startOffset="1%">
+              INTELIGENCIA ARTIFICIAL &#8226; INTELIGENCIA ARTIFICIAL &#8226;
+            </textPath>
+          </text>
+        </svg>
+        <span className="relative font-display text-4xl leading-none font-bold">3</span>
+        <span className="relative text-[0.56rem] tracking-[0.16em] uppercase">plazas</span>
+      </div>
     </div>
   );
 }
@@ -408,7 +417,11 @@ function InviteButton({
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-y-0 -left-1/4 w-1/4 -skew-x-12 bg-gradient-to-r from-transparent via-gold/70 to-transparent opacity-0 transition-[transform,opacity] duration-700 ease-out -translate-x-[10%] group-hover:translate-x-[520%] group-hover:opacity-100"
+        className="pointer-events-none absolute inset-y-0 -left-1/4 w-1/3 -skew-x-12 opacity-0 transition-[transform,opacity] duration-700 ease-out -translate-x-[10%] group-hover:translate-x-[480%] group-hover:opacity-100"
+        style={{
+          background:
+            "linear-gradient(100deg, transparent, rgba(166,138,63,0.65) 30%, rgba(127,217,196,0.55) 50%, rgba(199,158,224,0.6) 65%, transparent)",
+        }}
       />
       <span className="relative">{children}</span>
       <ArrowRight className="relative size-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
