@@ -229,10 +229,10 @@ export function EmberlyFunnel() {
                       key={opt}
                       onClick={() => selectChoice(step.key, opt)}
                       className={cn(
-                        "flex items-center gap-3 rounded-sm border px-5 py-3.5 text-[0.95rem] transition-colors",
+                        "flex items-center gap-3 rounded-sm border px-5 py-3.5 text-[0.95rem] transition-[background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(.2,.9,.25,1.2)] active:scale-[0.96]",
                         selected
                           ? "border-accent-strong bg-accent-strong text-primary-foreground"
-                          : "border-foreground/20 bg-transparent text-foreground hover:border-accent-strong hover:bg-accent-dim"
+                          : "border-foreground/20 bg-transparent text-foreground hover:-translate-y-0.5 hover:border-accent-strong hover:bg-accent-dim"
                       )}
                     >
                       <span>{opt}</span>
@@ -315,9 +315,9 @@ export function EmberlyFunnel() {
             onClick={goBack}
             disabled={current === 0}
             aria-label="Anterior"
-            className="pointer-events-auto flex size-9 items-center justify-center rounded-full border border-foreground/20 text-text-muted transition-colors hover:border-accent-strong hover:text-foreground disabled:cursor-not-allowed disabled:opacity-25"
+            className="group pointer-events-auto flex size-9 items-center justify-center rounded-full border border-foreground/20 text-text-muted transition-[border-color,color,transform] duration-200 ease-[cubic-bezier(.2,.9,.25,1.2)] hover:border-accent-strong hover:text-foreground active:scale-90 disabled:cursor-not-allowed disabled:opacity-25 disabled:active:scale-100"
           >
-            <ArrowLeft className="size-4" />
+            <ArrowLeft className="size-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
           </button>
           <span className="pointer-events-auto text-[0.68rem] tracking-wider text-text-dim">
             Enter ↵ para continuar
@@ -332,11 +332,11 @@ export function EmberlyFunnel() {
             }}
             aria-label="Siguiente"
             className={cn(
-              "pointer-events-auto flex size-9 items-center justify-center rounded-full border border-foreground/20 text-text-muted transition-colors hover:border-accent-strong hover:text-foreground",
+              "group pointer-events-auto flex size-9 items-center justify-center rounded-full border border-foreground/20 text-text-muted transition-[border-color,color,transform] duration-200 ease-[cubic-bezier(.2,.9,.25,1.2)] hover:border-accent-strong hover:text-foreground active:scale-90",
               !showFwd && "invisible"
             )}
           >
-            <ArrowRight className="size-4" />
+            <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
           </button>
         </div>
       )}
@@ -375,10 +375,14 @@ function InviteButton({
     <button
       disabled={disabled}
       onClick={onClick}
-      className="group inline-flex items-center gap-2.5 rounded-sm border border-accent-strong bg-accent-strong px-7 py-3 text-sm font-medium tracking-wide text-primary-foreground uppercase shadow-[0_10px_22px_-10px_rgba(31,61,43,0.6)] transition-all hover:bg-transparent hover:text-accent-strong disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-accent-strong disabled:hover:text-primary-foreground"
+      className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-sm border border-accent-strong bg-accent-strong px-7 py-3 text-sm font-medium tracking-wide text-primary-foreground uppercase shadow-[0_10px_22px_-10px_rgba(31,61,43,0.6)] transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(.2,.9,.25,1.2)] hover:bg-transparent hover:text-accent-strong active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-accent-strong disabled:hover:text-primary-foreground disabled:active:scale-100"
     >
-      {children}
-      <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 -left-1/4 w-1/4 -skew-x-12 bg-gradient-to-r from-transparent via-gold/70 to-transparent opacity-0 transition-[transform,opacity] duration-700 ease-out -translate-x-[10%] group-hover:translate-x-[520%] group-hover:opacity-100"
+      />
+      <span className="relative">{children}</span>
+      <ArrowRight className="relative size-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
     </button>
   );
 }
