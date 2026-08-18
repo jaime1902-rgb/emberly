@@ -116,11 +116,14 @@
 }
 
 @layer utilities {
-  /* Fine engraved dot-grid — reads as security-paper stipple (luxury) and as
-     a circuit/pixel grid (futurist) at once. Kept faint: texture, not pattern. */
+  /* Blueprint grid — drafting-table lines plus a finer dot subdivision.
+     Reads as engineering schematic (futurist) printed on fine stock (luxury). */
   .bg-fine-grid {
-    background-image: radial-gradient(circle at 1px 1px, rgba(31, 61, 43, 0.15) 1px, transparent 0);
-    background-size: 22px 22px;
+    background-image:
+      linear-gradient(rgba(31, 61, 43, 0.12) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(31, 61, 43, 0.12) 1px, transparent 1px),
+      radial-gradient(circle at 1px 1px, rgba(31, 61, 43, 0.16) 1px, transparent 0);
+    background-size: 44px 44px, 44px 44px, 22px 22px;
   }
 }
 
@@ -132,6 +135,10 @@
 @keyframes holo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+@keyframes scan-sweep {
+  0% { background-position: 0% -50%; }
+  100% { background-position: 0% 150%; }
 }
 @keyframes holo-sweep {
   0% { transform: translateX(-30%) rotate(20deg); }

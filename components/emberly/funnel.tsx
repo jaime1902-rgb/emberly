@@ -143,10 +143,23 @@ export function EmberlyFunnel() {
   const topAligned = step.type === "offer" || step.type === "contact";
 
   return (
-    <div className="bg-fine-grid relative flex h-svh flex-col bg-background">
+    <div className="bg-fine-grid relative flex h-svh flex-col overflow-hidden bg-background">
       {/* Ruled invitation-card frame */}
       <div className="pointer-events-none absolute inset-3 rounded-sm border border-gold/40 sm:inset-5" />
       <div className="pointer-events-none absolute inset-4 rounded-sm border border-foreground/10 sm:inset-6" />
+      {/* Scanner sweep — a slow signal pass over the whole page, the clearest
+          "this is a live system" cue, kept faint enough to stay a texture. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.09]"
+        style={{
+          background:
+            "linear-gradient(180deg, transparent 0%, var(--accent-strong) 8%, transparent 18%)",
+          backgroundSize: "100% 260%",
+          backgroundRepeat: "no-repeat",
+          animation: "scan-sweep 11s linear infinite",
+        }}
+      />
 
       <div className="relative flex flex-none items-center justify-between px-7 py-6 sm:px-12">
         <div className="flex items-center gap-2.5">
