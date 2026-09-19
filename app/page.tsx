@@ -1,5 +1,5 @@
-import { EmberlyFunnel } from "@/components/emberly/funnel";
+import { OrganiaFunnel } from "@/components/organia/funnel";
 
 export default function Home() {
-  return <EmberlyFunnel />;
+  return <OrganiaFunnel />;
 }

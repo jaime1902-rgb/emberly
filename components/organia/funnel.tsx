@@ -4,10 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { EmberlyMark } from "./mark";
+import { OrganiaMark } from "./mark";
 
-/** TODO: swap for Emberly's real WhatsApp Business number before launch. */
-const EMBERLY_WHATSAPP_NUMBER = "34600000000";
+/** TODO: swap for organ-IA's real WhatsApp Business number before launch. */
+const ORGANIA_WHATSAPP_NUMBER = "34600000000";
 
 const TOTAL_STEPS = 5;
 
@@ -36,7 +36,7 @@ const stepVariants = {
   exit: { x: -20, opacity: 0 },
 };
 
-export function EmberlyFunnel() {
+export function OrganiaFunnel() {
   const [step, setStep] = useState(0);
   const [tipo, setTipo] = useState<string | null>(null);
   const [dolor, setDolor] = useState<string | null>(null);
@@ -88,8 +88,8 @@ export function EmberlyFunnel() {
   const showBotnav = step !== 4;
   const showFwd = step === 0 || step === 3;
 
-  const whatsappHref = `https://wa.me/${EMBERLY_WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hola, soy ${nombre || "un solicitante"} de ${clinica || "mi clínica"}. Acabo de solicitar una de las 3 plazas del piloto de Emberly.`
+  const whatsappHref = `https://wa.me/${ORGANIA_WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    `Hola, soy ${nombre || "un solicitante"} de ${clinica || "mi clínica"}. Acabo de solicitar una de las 3 plazas del piloto de organ-IA.`
   )}`;
 
   return (
@@ -108,8 +108,8 @@ export function EmberlyFunnel() {
 
         <div className="flex items-center justify-between px-6 py-5 sm:px-9">
           <div className="flex items-center gap-2">
-            <EmberlyMark className="h-6 w-auto" />
-            <span className="font-display text-base font-semibold text-navy italic">Emberly AI</span>
+            <OrganiaMark className="h-6 w-auto" />
+            <span className="font-display text-base font-semibold text-navy italic">organ-IA</span>
           </div>
           <div className="font-data text-[0.68rem] font-medium tracking-[0.14em] text-text-dim tabular-nums">
             0{step + 1} / {TOTAL_STEPS}
@@ -456,7 +456,7 @@ function Seal() {
           </defs>
           <text fill="var(--gold)" fontSize="4.6" letterSpacing="1.4" className="font-sans">
             <textPath href="#seal-rim" startOffset="1%">
-              SELECCIÓN &#8226; EMBERLY AI &#8226; 2025 &#8226;
+              SELECCIÓN &#8226; ORGAN-IA &#8226; 2025 &#8226;
             </textPath>
           </text>
         </svg>

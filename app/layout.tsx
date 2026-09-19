@@ -22,9 +22,9 @@ const exo2 = Exo_2({
 });
 
 export const metadata: Metadata = {
-  title: "Emberly AI — La oferta de las 3 plazas",
+  title: "organ-IA — La oferta de las 3 plazas",
   description:
-    "Emberly implementa gratis su asistente de IA para WhatsApp en 3 clínicas durante 30 días.",
+    "organ-IA implementa gratis su asistente de IA para WhatsApp en 3 clínicas durante 30 días.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

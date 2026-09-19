@@ -33,12 +33,12 @@ Restrained-to-Committed strategy, two accent roles kept deliberately separate:
 - **Card shell**: the whole funnel lives inside one `rounded-sm` card (`bg-card`, `border-electric/15`) centered on the page; the border doubles as the "circuit connection lines" the brief asked for. Four small `--electric` dots (`CircuitCorners`) sit at its corners with a slow pulse.
 - **Progress rule**: a 1.5px `--electric` line across the card's top edge, animated with a spring (`framer-motion`), not a linear tween — reads as a system load indicator.
 - **Hero counter**: "SOLO QUEDAN" / a huge Bodoni numeral in navy / a blinking `--electric` `|` cursor / "PLAZAS DISPONIBLES" — a terminal-readout treatment of the scarcity count. The count must stay truthful (see PRODUCT.md); it is never inflated for urgency.
-- **Seal**: `Seal` in `funnel.tsx` — 80px medallion, navy fill, gold rim text ("SELECCIÓN · EMBERLY AI · 2025"), a conic-gradient shimmer ring animating navy → indigo → gold → navy (`holo-spin`). Its entrance (`seal-press`) doubles as the confirmation screen's "stamp."
+- **Seal**: `Seal` in `funnel.tsx` — 80px medallion, navy fill, gold rim text ("SELECCIÓN · ORGAN-IA · 2025"), a conic-gradient shimmer ring animating navy → indigo → gold → navy (`holo-spin`). Its entrance (`seal-press`) doubles as the confirmation screen's "stamp."
 - **Choice cards**: stacked full-width rows, `border-l-[3px] border-l-electric` + `bg-electric-dim` when selected, `whileHover={{x:4}}` via Framer Motion. Data tags (`DataTag`) are Exo 2 small caps on `--electric-dim`.
 - **Two-phase question**: the "dolor" step reveals a second micro-question (message volume, 3 pills) via fade-in once an answer is chosen, before advancing — handled as local state within one step, not a separate step in the counter.
 - **Fields**: `border-b-2` only, Exo 2 tracked label above, `focus:border-electric`. No boxed inputs.
 - **Buttons**: `NavyButton` — solid navy, hover fades the border to `--electric` and lightens the fill slightly (150ms). No gradients, no shine sweep in this direction (the prior direction's iridescent hover was dropped along with the green palette).
-- **WhatsApp CTA**: on confirmation, a real `wa.me` deep link pre-filled with the applicant's name/clinic. `EMBERLY_WHATSAPP_NUMBER` in `funnel.tsx` is a **placeholder** — replace before launch.
+- **WhatsApp CTA**: on confirmation, a real `wa.me` deep link pre-filled with the applicant's name/clinic. `ORGANIA_WHATSAPP_NUMBER` in `funnel.tsx` is a **placeholder** — replace before launch.
 - **Background**: `.bg-tech-grid` (utility in `globals.css`) — 40px navy-tinted grid lines behind the card, "plano técnico" texture. Global `*:focus-visible` outline is 2px solid `--electric` per spec.
 
 ## Known traps (carried forward — avoid repeating)
