@@ -46,10 +46,32 @@ export function OrganiaFunnel() {
   const [telefono, setTelefono] = useState("");
   const [ciudad, setCiudad] = useState("");
 
-  const referencia = useMemo(() => `#EMB-${Date.now().toString(36).toUpperCase()}`, []);
+  const referencia = useMemo(() => `#ORG-${Date.now().toString(36).toUpperCase()}`, []);
+
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const goNext = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
   const goBack = () => setStep((s) => Math.max(s - 1, 0));
+
+  async function submit() {
+    if (sending) return;
+    setSending(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/solicitudes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ referencia, tipo, dolor, volumen, nombre, clinica, telefono, ciudad }),
+      });
+      if (!res.ok) throw new Error();
+      goNext();
+    } catch {
+      setError("No hemos podido enviar tu solicitud. Inténtalo de nuevo en unos segundos.");
+    } finally {
+      setSending(false);
+    }
+  }
 
   const datosValid = useMemo(() => {
     const phoneOk = telefono.replace(/[^0-9]/g, "").length >= 9;
@@ -75,14 +97,14 @@ export function OrganiaFunnel() {
       const isInput = (document.activeElement as HTMLElement)?.tagName === "INPUT";
       if (e.key === "Enter") {
         if (step === 0) goNext();
-        else if (step === 3 && datosValid) goNext();
+        else if (step === 3 && datosValid) submit();
       }
       if (e.key === "Backspace" && !isInput) goBack();
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, datosValid]);
+  }, [step, datosValid, sending]);
 
   const progress = (step / (TOTAL_STEPS - 1)) * 100;
   const showBotnav = step !== 4;
@@ -256,8 +278,13 @@ export function OrganiaFunnel() {
                     confirmamos tu plaza en menos de 24h. Si decides continuar tras el piloto, el
                     precio de la mensualidad queda acordado desde el día 1 — sin sorpresas.
                   </p>
-                  <NavyButton className="mt-7 mb-16 w-full max-w-md justify-center" disabled={!datosValid} onClick={goNext}>
-                    Solicitar mi plaza
+                  {error && (
+                    <p role="alert" className="mt-4 text-xs text-red-700">
+                      {error}
+                    </p>
+                  )}
+                  <NavyButton className="mt-7 mb-16 w-full max-w-md justify-center" disabled={!datosValid || sending} onClick={submit}>
+                    {sending ? "Enviando…" : "Solicitar mi plaza"}
                   </NavyButton>
                 </div>
               )}
@@ -312,7 +339,7 @@ export function OrganiaFunnel() {
             <button
               onClick={() => {
                 if (step === 3) {
-                  if (datosValid) goNext();
+                  if (datosValid) submit();
                 } else {
                   goNext();
                 }
