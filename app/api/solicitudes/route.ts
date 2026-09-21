@@ -1,4 +1,6 @@
+import { after } from "next/server";
 import { getSql } from "@/lib/db";
+import { notifyNuevaSolicitud } from "@/lib/notify";
 
 const clean = (v: unknown, max: number) =>
   typeof v === "string" ? v.trim().slice(0, max) : "";
@@ -22,13 +24,24 @@ export async function POST(request: Request) {
   }
 
   try {
+    const s = {
+      referencia,
+      tipo: clean(body.tipo, 80),
+      dolor: clean(body.dolor, 200),
+      volumen: clean(body.volumen, 80),
+      nombre,
+      clinica: clean(body.clinica, 160),
+      telefono,
+      ciudad: clean(body.ciudad, 80),
+    };
     const sql = await getSql();
-    await sql`
+    const inserted = await sql`
       INSERT INTO solicitudes (referencia, tipo, dolor, volumen, nombre, clinica, telefono, ciudad)
-      VALUES (${referencia}, ${clean(body.tipo, 80)}, ${clean(body.dolor, 200)}, ${clean(body.volumen, 80)},
-              ${nombre}, ${clean(body.clinica, 160)}, ${telefono}, ${clean(body.ciudad, 80)})
+      VALUES (${s.referencia}, ${s.tipo}, ${s.dolor}, ${s.volumen}, ${s.nombre}, ${s.clinica}, ${s.telefono}, ${s.ciudad})
       ON CONFLICT (referencia) DO NOTHING
+      RETURNING id
     `;
+    if (inserted.length) after(() => notifyNuevaSolicitud(s));
     return Response.json({ ok: true });
   } catch (err) {
     console.error("solicitudes insert failed", err);
